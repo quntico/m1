@@ -84,3 +84,11 @@ En `AUDITORIA`, un puntaje sólo cuenta si tiene evidencia, origen, responsable,
 ## DATOS Y PERSISTENCIA
 
 Todos los documentos analizados y la memoria de historial de Bid Architect se guardan físicamente y pueden inspeccionarse en la ruta: \data/projects/M1/\.
+
+## Acceso rapido Windows
+
+1. Ejecutar una sola vez instalador usando PowerShell:
+\powershell -ExecutionPolicy Bypass -File tools/windows/install-shortcut.ps1\`n2. Aparecera un icono \M1 CONTROL CENTER\ en el Escritorio.
+3. Hacer doble clic arranca \
+pm run dev\ y verifica localhost:3000 de fondo.
+4. El sistema abre automaticamente tu navegador predeterminado para comenzar localmente sin abrir multiples instancias si ya corre.
