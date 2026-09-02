@@ -102,7 +102,7 @@
 
           <button id="adminBtn" class="action-btn"
             style="border-radius: 100px; width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--line-strong);"
-            title="Administración CLOUD">
+            title="Administración CLOUD" onclick="document.getElementById('adminModal').style.display='flex'">
             <i class="ph-bold ph-gear-six" style="font-size: 20px; color: var(--text-dark);"></i>
           </button>
         </div>
@@ -126,8 +126,11 @@
             </div>
           </div>
           <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:32px">
-            <button id="closeAdminBtn" class="warn">Cerrar</button>
-            <button id="saveAdminBtn" class="primary">Guardar Cambios</button>
+            <button id="closeAdminBtn" class="warn"
+              onclick="document.getElementById('adminModal').style.display='none'">Cerrar</button>
+            <button id="saveAdminBtn" class="primary"
+              onclick="localStorage.setItem('m1_api_key', document.getElementById('apiCloudKey').value); document.getElementById('adminModal').style.display='none'">Guardar
+              Cambios</button>
           </div>
         </div>
       </div>
