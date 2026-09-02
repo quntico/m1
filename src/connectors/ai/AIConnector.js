@@ -30,8 +30,8 @@ class AIConnector {
             return response.choices[0].message.content;
         } catch (error) {
             console.error("AIConnector Error:", error);
-            if (error.status === 401) return "AUTENTICACIÓN FALLIDA: Tu API Key fue rechazada por el servidor LLM. Verifica las credenciales e intenta nuevamente.";
-            throw error;
+            if (error.status === 401) return "AUTENTICACIÓN FALLIDA: Tu API Key fue rechazada por el servidor LLM. Verifica que hayas copiado correctamente la llave 'sk-...'.";
+            return `ERROR DE IA DE RED: ${error.message || 'Se produjo un aborto de conexión al modelo backend.'}`;
         }
     }
 
@@ -55,7 +55,7 @@ class AIConnector {
         } catch (error) {
             console.error("AIConnector Document Analysis Error:", error);
             if (error.status === 401) return "AUTENTICACIÓN FALLIDA: Tu API Key fue rechazada al analizar este documento.";
-            throw error;
+            return `ERROR DE IA DE RED: ${error.message || 'Fallo inesperado al enviar extracción documental.'}`;
         }
     }
 }
