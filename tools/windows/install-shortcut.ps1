@@ -9,8 +9,8 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectDir = (Get-Item "$scriptDir\..\..").FullName
 Write-Host "[INFO] Ruta del proyecto detectada: $projectDir"
 
-# 2. Archivo BAT objetivo
-$targetBat = "$projectDir\tools\windows\start-m1-local.bat"
+# 2. Archivo VBS objetivo
+$targetBat = "$projectDir\tools\windows\start-m1-local.vbs"
 if (-Not (Test-Path $targetBat)) {
     Write-Host "[ERROR] No se ahcontro el archivo de arranque: $targetBat" -ForegroundColor Red
     exit 1

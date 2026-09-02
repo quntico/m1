@@ -55,6 +55,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // API Endpoints
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', service: 'bid-architect' });
+});
+
 app.post('/api/chat', async (req, res) => {
     try {
         const { message, contextId, contextType } = req.body;
