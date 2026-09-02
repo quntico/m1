@@ -20,12 +20,16 @@ Se construyó a partir del Método de Calificación M1 y del Acta de Fallo sumin
 - Carta CDR: 3.
 - Discapacidad: 0.5.
 
+Estas fórmulas se centralizaron en `src/calculations/m1Calculations.js` para evitar duplicación en la UI.
+
 ## Interpretaciones operativas del motor
 - RRHH/experiencia usa relación proporcional años acreditados / años objetivo porque el método habla de puntuación proporcional.
 - Preparación académica se parametrizó: Licenciatura=2, Maestría=3, Doctorado=4. Antes de presentar oferta debe validarse contra la convocatoria/junta vigente.
 - Discapacidad: el motor usa 5% como umbral para 0.5 en precalificación.
 - Cumplimiento: el helper interno asigna 1 punto por referencia completa hasta 3; la matriz permite override manual.
 - Calidad: el documento presenta máximos por subrubro; el fallo histórico muestra puntajes parciales en PROGONZA. Por ello el histórico se conserva exacto y Consorcio X puede usar manual override.
+
+El motor marca como `REQUIERE_VALIDACION` las reglas que dependen de interpretación, evidencia documental o supuestos competitivos.
 
 ## Recomendación de uso
 Usar el modo automático para identificar huecos y el override manual únicamente cuando el equipo jurídico/técnico haya confirmado cómo aplicará CONAGUA la proporcionalidad en la nueva convocatoria.

@@ -8,6 +8,14 @@ Motor editable para Antigravity.
 3. Ejecuta `index.html` o, si tienes Node.js:
    `npx serve .`
 
+## Pruebas
+
+```bash
+npm test
+```
+
+Ejecuta la suite unitaria del motor de cálculo.
+
 ## Qué hace
 - Reproduce el histórico de GH (48/50) y PROGONZA + INARVI (35.4/50).
 - Calcula Consorcio X desde microcriterios.
@@ -35,7 +43,11 @@ Motor editable para Antigravity.
 - `index.html`
 - `assets/styles.css`
 - `assets/app.js`
+- `src/calculations/m1Calculations.js`
+- `tests/calculations/m1Calculations.test.js`
 - `data/m1_scoring_model.json`
+- `docs/ARCHITECTURE.md`
+- `docs/CALCULATIONS.md`
 - `docs/NOTAS_DE_IMPLEMENTACION.md`
 
 ## Importante
@@ -44,3 +56,9 @@ El programa distingue entre:
 2. Reglas internas de precalificación que requieren una interpretación operativa para poder automatizarse.
 
 Las reglas internas están documentadas y siempre existe override manual en la matriz técnica.
+
+## Arquitectura de cálculo
+
+Las fórmulas M1 viven en `src/calculations/m1Calculations.js`. La interfaz consume ese módulo y no debe duplicar fórmulas en HTML.
+
+Cada cálculo devuelve fórmula, entradas, resultado, unidades, fuente/regla, confianza, estado y advertencias. Las reglas ambiguas se marcan como `REQUIERE_VALIDACION`.

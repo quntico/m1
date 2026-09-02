@@ -1,4 +1,5 @@
-const MIN = 37.5;
+const M1Calc = window.M1Calculations;
+const MIN = M1Calc.M1_LIMITS.TECHNICAL_SOLVENCY_MIN;
 const groups = [{ id: "quality", name: "I. CALIDAD DE LA OBRA", max: 15 }, { id: "capacity", name: "II. CAPACIDAD DEL LICITANTE", max: 17 }, { id: "experience", name: "III. EXPERIENCIA Y ESPECIALIDAD", max: 15 }, { id: "contracts", name: "IV. CUMPLIMIENTO DE CONTRATOS", max: 3 }];
 
 const criteria = [
@@ -40,42 +41,23 @@ criteria.forEach(c => { state.scores[c.id] = { gh: c.hist.gh, pro: c.hist.pro, x
 try { const s = localStorage.getItem("m1_prequal_autosave"); if (s) state = merge(defaultState(), JSON.parse(s)) } catch (e) { }
 function merge(a, b) { if (Array.isArray(a)) return b ?? a; if (a && typeof a === "object") { for (const k in a) a[k] = k in (b || {}) ? merge(a[k], b[k]) : a[k]; for (const k in (b || {})) if (!(k in a)) a[k] = b[k]; return a } return b ?? a }
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
-const fmt = n => Number(n || 0).toFixed(2), money = n => Number(n || 0).toLocaleString("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 2 }), clamp = (v, a, b) => Math.min(b, Math.max(a, Number(v) || 0));
+const fmt = n => Number(n || 0).toFixed(2), money = n => Number(n || 0).toLocaleString("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 2 }), clamp = M1Calc.clamp;
 function persist() { localStorage.setItem("m1_prequal_autosave", JSON.stringify(state)) }
 function autoScores() {
-  // RRHH: sólo puntúa si se acredita plantilla mínima.
-  let hr = 0;
-  if (state.hr.minimumStaff) {
-    const req = Math.max(1, Number(state.hr.requiredYears) || 1), yrs = Math.max(0, Number(state.hr.experienceYears) || 0);
-    hr += Math.min(1, yrs / req); // Experiencia: hasta 1 punto, proporcional bajo el máximo.
-    const acad = { none: 0, lic: 2, maestria: 3, doctorado: 4 }[state.hr.academic] || 0;
-    hr += acad;
-    hr += state.hr.software ? 1 : 0;
-  }
-  const f = state.finance;
-  let fin = 0;
-  if (Number(f.workingCapital) >= Number(f.threeMonthNeed) && Number(f.threeMonthNeed) > 0) fin += 4;
-  if (Number(f.currentLiabilities) > 0 && Number(f.currentAssets) / Number(f.currentLiabilities) >= 1) fin += 1;
-  if (Number(f.totalAssets) > 0 && Number(f.totalLiabilities) / Number(f.totalAssets) <= .5) fin += 1;
-  const exp = (state.exp.rsu500 ? 3 : 0) + (state.exp.electrical ? 1 : 0) + (state.exp.steel ? 1 : 0) + (state.exp.industrial ? 1 : 0);
-  const spec = (state.spec.design500 ? 2 : 0) + (state.spec.operated1825 ? 2 : 0) + ((Number(state.spec.oemMexico) >= 3 && Number(state.spec.oemInternational) >= 10) ? 2 : 0);
-  const disability = Number(state.extras.disabilityPct) >= 5 ? .5 : 0;
-  const mipyme = state.extras.mipyme ? .5 : 0, oem = state.extras.oemLetter ? 4 : 0, cdr = state.extras.cdrLetter ? 3 : 0;
-  const compliance = Math.min(3, Math.max(0, Number(state.extras.complianceContracts) || 0)); // internal prequal: 1 point per compliant reference up to 3
-  return { c_a: hr, c_b: fin, c_c: disability, c_d: mipyme, c_e: oem, e_a: exp, e_b: spec, e_c: cdr, k_a: compliance };
+  return M1Calc.calculateAutoScores(state).scores;
 }
 function syncAuto() {
   const a = autoScores();
   Object.entries(a).forEach(([id, v]) => { if (!state.override[id]?.x) state.scores[id].x = v });
 }
-function tech(k) { syncAuto(); return criteria.reduce((s, c) => s + Number(state.scores[c.id][k] || 0), 0) }
-function gscore(k, g) { syncAuto(); return criteria.filter(c => c.g === g).reduce((s, c) => s + Number(state.scores[c.id][k] || 0), 0) }
-function report() { const arr = Object.entries(state.companies).map(([key, c]) => ({ key, name: c.name, price: +c.price || 0, technical: tech(key) })); arr.forEach(x => x.solvent = x.technical >= MIN); const sols = arr.filter(x => x.solvent && x.price > 0), low = sols.length ? Math.min(...sols.map(x => x.price)) : 0; arr.forEach(x => { x.economic = x.solvent && low ? 50 * low / x.price : 0; x.total = x.technical + x.economic }); return { arr, low, ordered: [...arr].sort((a, b) => b.total - a.total) } }
+function tech(k) { syncAuto(); return M1Calc.calculateTechnicalScore(criteria, state.scores, k).result }
+function gscore(k, g) { syncAuto(); return M1Calc.calculateGroupScore(criteria, state.scores, k, g).result }
+function report() { syncAuto(); return M1Calc.buildReport(state, criteria) }
 function badge(x) { return `<span class="badge ${x.solvent ? "good" : "bad"}">${x.solvent ? "SOLVENTE" : "NO SOLVENTE"}</span>` }
 function card(x) { return `<article class="card ${x.key}"><div class="ct"><h3>${x.name}</h3>${badge(x)}</div><div class="metrics"><div class="metric"><span>Técnica</span><b>${fmt(x.technical)}/50</b></div><div class="metric"><span>Económica</span><b>${fmt(x.economic)}/50</b></div><div class="metric"><span>Total</span><b>${fmt(x.total)}/100</b></div><div class="metric"><span>Oferta</span><b style="font-size:14px">${money(x.price)}</b></div></div></article>` }
 function renderCockpit() {
   window.cockpitTarget = window.cockpitTarget || "x";
-  const r = report(), x = r.arr.find(a => a.key === window.cockpitTarget) || r.arr.find(a => a.key === "x"), gap = Math.max(0, 50 - x.technical), pct = x.technical / 50 * 100;
+  const r = report(), x = r.arr.find(a => a.key === window.cockpitTarget) || r.arr.find(a => a.key === "x"), gap = M1Calc.calculateTechnicalGapToMax(x.technical).result, pct = M1Calc.calculateTechnicalProgressPercent(x.technical).result;
   const tabsHtml = `<div class="tabs-ui" style="display:flex;gap:12px;margin-bottom:12px;">${r.arr.map(a => `<button class="${a.key === window.cockpitTarget ? 'active' : ''}" style="flex:1;text-align:center;justify-content:center;border-radius:12px;" onclick="window.cockpitTarget='${a.key}'; renderAll()">${a.name}</button>`).join("")}</div>`;
   const actionsHtml = `<div style="display:flex;gap:12px;margin-bottom:24px;">
     <button style="flex:1" class="primary" onclick="criteria.forEach(c=>{state.scores[c.id][window.cockpitTarget]=c.max;if(window.cockpitTarget==='x'&&c.auto)state.override[c.id].x=true});persist();renderAll()">✓ Aprobar todos los puntos</button>
@@ -88,14 +70,14 @@ function renderCockpit() {
         <p style="margin:0;color:var(--text-muted);font-size:13px;line-height:1.5;">El simulador calcula <b>100 Puntos Totales</b>: La <b>Evaluación Técnica</b> otorga máximo 50 pts (se requiere 37.50 para sobrevivir). La propuesta <b>Económica</b> otorga 50 pts al precio más bajo y penaliza proporcionalmente a las demás opciones.</p>
       </div>
   </div>`;
-  $("#hero").innerHTML = `${tabsHtml}${actionsHtml}${explainerHtml}<section class="hero"><div><span class="eyebrow">${x.name}</span><h2>${x.solvent ? "Técnicamente solvente" : "Aún no alcanza el mínimo técnico"}</h2><p>Mínimo 37.50/50. Brecha al máximo: <b>${fmt(gap)} pts</b>. ${x.solvent ? "Puede entrar al cálculo económico." : "Faltan " + fmt(MIN - x.technical) + " puntos para el umbral."}</p><div class="progress"><div style="width:${Math.min(100, pct)}%"></div></div></div><div><div class="score">${fmt(x.technical)}</div><b>de 50 pts técnicos</b></div></section>`;
+  $("#hero").innerHTML = `${tabsHtml}${actionsHtml}${explainerHtml}<section class="hero"><div><span class="eyebrow">${x.name}</span><h2>${x.solvent ? "Técnicamente solvente" : "Aún no alcanza el mínimo técnico"}</h2><p>Mínimo 37.50/50. Brecha al máximo: <b>${fmt(gap)} pts</b>. ${x.solvent ? "Puede entrar al cálculo económico." : "Faltan " + fmt(M1Calc.calculatePointsNeededForSolvency(x.technical).result) + " puntos para el umbral."}</p><div class="progress"><div style="width:${pct}%"></div></div></div><div><div class="score">${fmt(x.technical)}</div><b>de 50 pts técnicos</b></div></section>`;
   $("#companyCards").innerHTML = r.arr.map(card).join("");
-  const breaches = criteria.map(c => ({ c, loss: c.max - state.scores[c.id][window.cockpitTarget], score: state.scores[c.id][window.cockpitTarget] })).filter(o => o.loss > .001).sort((a, b) => b.loss - a.loss);
+  const breaches = criteria.map(c => ({ c, loss: M1Calc.calculateScoreGap({ currentScore: state.scores[c.id][window.cockpitTarget], maxScore: c.max }).result, score: state.scores[c.id][window.cockpitTarget] })).filter(o => o.loss > .001).sort((a, b) => b.loss - a.loss);
   const actionUI = (c, k, loss) => `<div style="text-align:right"><div style="color:var(--danger);font-weight:900;font-size:16px;margin-bottom:6px">Faltan ${fmt(loss)} pts</div><button class="primary" style="padding:6px 12px;font-size:10px" onclick="state.scores['${c.id}']['${k}']=${c.max};if('${k}'==='x'&&${c.auto})state.override['${c.id}'].x=true;persist();renderAll()">Subsanar / Aprobar</button></div>`;
   $("#breaches").innerHTML = breaches.length ? breaches.slice(0, 9).map(o => `<div class="breach" style="align-items:center;"><div><b>${o.c.t}</b><small>${o.c.at} · Brecha detectada</small></div>${actionUI(o.c, window.cockpitTarget, o.loss)}</div>`).join("") : `<div class="calcbox"><b>Sin brechas: 50/50</b></div>`;
   document.querySelector("#view-cockpit .grid2 section:nth-child(1) h2").textContent = `Qué falta para maximizar ${x.name}`;
-  const risks = criteria.filter(c => c.fatal && state.scores[c.id][window.cockpitTarget] < c.max - .001);
-  $("#fatalRisks").innerHTML = risks.length ? risks.slice(0, 9).map(c => `<div class="risk" style="align-items:center;"><div><b>${c.t}</b><div class="desc">${c.at} · Riesgo de descalificación</div></div>${actionUI(c, window.cockpitTarget, c.max - state.scores[c.id][window.cockpitTarget])}</div>`).join("") : `<div class="calcbox"><b>Sin alertas críticas.</b></div>`;
+  const risks = criteria.filter(c => c.fatal && M1Calc.calculateScoreGap({ currentScore: state.scores[c.id][window.cockpitTarget], maxScore: c.max }).result > .001);
+  $("#fatalRisks").innerHTML = risks.length ? risks.slice(0, 9).map(c => `<div class="risk" style="align-items:center;"><div><b>${c.t}</b><div class="desc">${c.at} · Riesgo de descalificación</div></div>${actionUI(c, window.cockpitTarget, M1Calc.calculateScoreGap({ currentScore: state.scores[c.id][window.cockpitTarget], maxScore: c.max }).result)}</div>`).join("") : `<div class="calcbox"><b>Sin alertas críticas.</b></div>`;
   document.querySelector("#view-cockpit .grid2 section:nth-child(2) h2").textContent = `Semáforo de desechamiento: ${x.name}`;
   $("#ranking").innerHTML = r.ordered.map((a, i) => `<tr><td>${i + 1}</td><td><b>${a.name}</b></td><td>${fmt(a.technical)}</td><td>${badge(a)}</td><td>${fmt(a.economic)}</td><td><b>${fmt(a.total)}</b></td><td>${money(a.price)}</td></tr>`).join("");
 }
@@ -119,16 +101,16 @@ function bindScores() {
 }
 function chk(id, label, sub, checked) { return `<label class="check"><input type="checkbox" id="${id}" ${checked ? "checked" : ""}><span><b>${label}</b><small>${sub}</small></span></label>` }
 function renderHR() {
-  const h = state.hr, a = autoScores().c_a;
+  const h = state.hr, hrCalc = M1Calc.calculateHumanResourcesScore(h), a = hrCalc.result;
   $("#hrEngine").innerHTML = `${chk("hrMin", "Plantilla mínima completa", "Sólo se asigna puntuación si se acredita la plantilla mínima indicada en los Alcances.", h.minimumStaff)}
  <div class="formgrid"><div class="field"><label>Años de experiencia acreditados</label><input id="hrYears" type="number" min="0" step=".5" value="${h.experienceYears}"></div><div class="field"><label>Años máximos/requeridos usados para comparación</label><input id="hrReq" type="number" min="1" step=".5" value="${h.requiredYears}"></div>
  <div class="field"><label>Grado académico del responsable</label><select id="hrAcad"><option value="none">Sin acreditar</option><option value="lic">Licenciatura / Ing. Civil</option><option value="maestria">Maestría</option><option value="doctorado">Doctorado</option></select></div>
  <div class="field"><label>Dominio de software de diseño 2D/3D acreditado</label><select id="hrSoft"><option value="0">No</option><option value="1">Sí</option></select></div></div>`;
   $("#hrAcad").value = h.academic; $("#hrSoft").value = h.software ? "1" : "0";
   $("#hrResult").innerHTML = `<div class="calcbox"><span class="eyebrow">PUNTAJE</span><div class="big">${fmt(a)} / 6.00</div></div>
- <div class="ratio"><span>Experiencia</span><b>${h.minimumStaff ? fmt(Math.min(1, (+h.experienceYears || 0) / Math.max(1, +h.requiredYears || 1))) : "0.00"} / 1</b></div>
- <div class="ratio"><span>Preparación académica</span><b>${h.minimumStaff ? fmt({ none: 0, lic: 2, maestria: 3, doctorado: 4 }[h.academic] || 0) : "0.00"} / 4</b></div>
- <div class="ratio"><span>Software 2D/3D</span><b>${h.minimumStaff && h.software ? "1.00" : "0.00"} / 1</b></div>
+ <div class="ratio"><span>Experiencia</span><b>${fmt(hrCalc.breakdown.experience)} / 1</b></div>
+ <div class="ratio"><span>Preparación académica</span><b>${fmt(hrCalc.breakdown.academic)} / 4</b></div>
+ <div class="ratio"><span>Software 2D/3D</span><b>${fmt(hrCalc.breakdown.software)} / 1</b></div>
  <p class="desc">El método asigna 6 puntos a este subrubro y condiciona la puntuación a acreditar la plantilla mínima. El motor permite parametrizar años porque el documento usa una relación proporcional respecto al máximo acreditado.</p>`;
   $("#hrMin").onchange = e => { h.minimumStaff = e.target.checked; persist(); renderAll() };
   $("#hrYears").onchange = e => { h.experienceYears = +e.target.value; persist(); renderAll() }; $("#hrReq").onchange = e => { h.requiredYears = +e.target.value; persist(); renderAll() };
@@ -151,9 +133,9 @@ function renderContracts() {
   $$("[data-c]").forEach(e => e.onchange = () => { const [i, k] = e.dataset.c.split("|"); state.contracts[i][k] = e.value; persist() }); $$("[data-cc]").forEach(e => e.onchange = () => { const [i, k] = e.dataset.cc.split("|"); state.contracts[i][k] = e.checked; persist() }); $$("[data-delc]").forEach(b => b.onclick = () => { state.contracts.splice(+b.dataset.delc, 1); persist(); renderAll() });
 }
 function renderFinance() {
-  const f = state.finance, liq = +f.currentLiabilities ? +f.currentAssets / +f.currentLiabilities : 0, lev = +f.totalAssets ? +f.totalLiabilities / +f.totalAssets : 0, sc = autoScores().c_b;
+  const f = state.finance, finCalc = M1Calc.calculateFinancialCapacityScore(f), liq = finCalc.breakdown.liquidityRatio, lev = finCalc.breakdown.debtRatio, sc = finCalc.result;
   $("#financeEngine").innerHTML = `<div class="formgrid"><div class="field"><label>Capital de trabajo acreditable</label><input id="wc" type="number" value="${f.workingCapital}"></div><div class="field"><label>Necesidad de primeros 3 meses</label><input id="need" type="number" value="${f.threeMonthNeed}"></div><div class="field"><label>Activo circulante</label><input id="ca" type="number" value="${f.currentAssets}"></div><div class="field"><label>Pasivo circulante</label><input id="cl" type="number" value="${f.currentLiabilities}"></div><div class="field"><label>Pasivo total</label><input id="tl" type="number" value="${f.totalLiabilities}"></div><div class="field"><label>Activo total</label><input id="ta" type="number" value="${f.totalAssets}"></div></div>`;
-  $("#financeResult").innerHTML = `<div class="calcbox"><div class="big">${fmt(sc)} / 6.00</div></div><div class="ratio"><span>Capital de trabajo ≥ 3 meses</span><b>${(+f.workingCapital >= +f.threeMonthNeed && +f.threeMonthNeed > 0) ? "4.00" : "0.00"} / 4</b></div><div class="ratio"><span>Liquidez Activo circ. / Pasivo circ.</span><b>${fmt(liq)} ${liq >= 1 ? "✓" : "✕"} · 1 pt</b></div><div class="ratio"><span>Endeudamiento Pasivo total / Activo total</span><b>${fmt(lev * 100)}% ${lev <= .5 ? "✓" : "✕"} · 1 pt</b></div>`;
+  $("#financeResult").innerHTML = `<div class="calcbox"><div class="big">${fmt(sc)} / 6.00</div></div><div class="ratio"><span>Capital de trabajo ≥ 3 meses</span><b>${fmt(finCalc.breakdown.workingCapitalScore)} / 4</b></div><div class="ratio"><span>Liquidez Activo circ. / Pasivo circ.</span><b>${fmt(liq)} ${liq >= 1 ? "✓" : "✕"} · 1 pt</b></div><div class="ratio"><span>Endeudamiento Pasivo total / Activo total</span><b>${fmt(lev * 100)}% ${lev <= .5 ? "✓" : "✕"} · 1 pt</b></div>`;
   [["#wc", "workingCapital"], ["#need", "threeMonthNeed"], ["#ca", "currentAssets"], ["#cl", "currentLiabilities"], ["#tl", "totalLiabilities"], ["#ta", "totalAssets"]].forEach(([s, k]) => $(s).onchange = e => { f[k] = +e.target.value; persist(); renderAll() });
   $("#capacityExtras").innerHTML = `<div class="formgrid"><div class="field"><label>% personal con discapacidad acreditado</label><input id="dis" type="number" min="0" step=".1" value="${state.extras.disabilityPct}"><div class="desc">Motor asigna 0.5 si alcanza 5%.</div></div>
  <div class="field">${chk("mip", "Carta MIPYME", "Laboratorios de calidad de agua y materiales · 0.5 pt.", state.extras.mipyme)}</div>
@@ -166,7 +148,7 @@ function renderPrice() {
   const r = report(); $("#priceCards").innerHTML = r.arr.map(card).join("");
   $("#priceEngine").innerHTML = `<div class="formgrid">${r.arr.map(a => `<div class="field"><label>${a.name} · oferta sin IVA</label><input data-price="${a.key}" value="${a.price}"><div class="desc">Técnica ${fmt(a.technical)} · ${a.solvent ? "solvente" : "no solvente"}</div></div>`).join("")}</div>`;
   $$("[data-price]").forEach(e => e.onchange = () => { state.companies[e.dataset.price].price = +String(e.value).replace(/,/g, "") || 0; persist(); renderAll() });
-  const leader = r.ordered[0]; $("#priceRanking").innerHTML = r.ordered.map(a => `<tr><td><b>${a.name}</b></td><td>${fmt(a.technical)}</td><td>${money(a.price)}</td><td>${fmt(a.economic)}</td><td><b>${fmt(a.total)}</b></td><td>${fmt(a.total - leader.total)} pts</td></tr>`).join("");
+  const leader = r.ordered[0]; $("#priceRanking").innerHTML = r.ordered.map(a => `<tr><td><b>${a.name}</b></td><td>${fmt(a.technical)}</td><td>${money(a.price)}</td><td>${fmt(a.economic)}</td><td><b>${fmt(a.total)}</b></td><td>${fmt(M1Calc.calculateDifference({ value: a.total, baseline: leader.total }).result)} pts</td></tr>`).join("");
 }
 function renderDocs() {
   $("#docsEngine").innerHTML = criteria.map(c => { const d = state.docs[c.id] || { done: false, owner: "", note: "" }; return `<div class="docrow"><input data-dd="${c.id}" type="checkbox" ${d.done ? "checked" : ""}><div><b>${c.at}</b></div><div><b>${c.t}</b><div class="desc">${c.d}</div></div><textarea data-dn="${c.id}" placeholder="Documento / folio / evidencia">${esc(d.note || "")}</textarea><input data-do="${c.id}" placeholder="Responsable" value="${esc(d.owner || "")}"></div>` }).join("");
@@ -174,10 +156,10 @@ function renderDocs() {
 }
 function renderScenario() {
   $("#scenarioEngine").innerHTML = `<div class="scenario-buttons"><button data-scn="historic">Histórico GH / PROGONZA</button><button data-scn="x50">X técnico 50</button><button data-scn="x45">X técnico ~45</button><button data-scn="prices">Restaurar precios base</button></div><hr style="border:0;border-top:1px solid var(--l);margin:14px 0"><div class="formgrid"><div class="field"><label>Variación GH %</label><input id="dg" type="number" value="0"></div><div class="field"><label>Variación PROGONZA %</label><input id="dp" type="number" value="0"></div><div class="field"><label>Variación X %</label><input id="dx" type="number" value="0"></div></div><button id="applyD" class="primary" style="margin-top:9px">Aplicar variaciones</button>`;
-  const x = report().arr.find(a => a.key === "x"), needed = Math.max(0, MIN - x.technical);
+  const x = report().arr.find(a => a.key === "x"), needed = M1Calc.calculatePointsNeededForSolvency(x.technical).result;
   $("#targetEngine").innerHTML = `<div class="calcbox"><span class="eyebrow">SOLVENCIA</span><div class="big">${needed <= 0 ? "CUMPLE" : "FALTAN " + fmt(needed)}</div><div class="desc">${needed <= 0 ? "Consorcio X supera 37.50." : "Puntos técnicos para alcanzar 37.50."}</div></div><div class="ratio"><span>Objetivo conservador</span><b>≥ 45.00 / 50</b></div><div class="ratio"><span>Objetivo máximo</span><b>50.00 / 50</b></div><div class="ratio"><span>Puntaje actual</span><b>${fmt(x.technical)} / 50</b></div>`;
-  $$("[data-scn]").forEach(b => b.onclick = () => { const t = b.dataset.scn; if (t === "historic") { criteria.forEach(c => { state.scores[c.id].gh = c.hist.gh; state.scores[c.id].pro = c.hist.pro }) } if (t === "x50") { criteria.forEach(c => { state.scores[c.id].x = c.max; state.override[c.id].x = true }) } if (t === "x45") { criteria.forEach(c => { state.scores[c.id].x = c.max * .9; state.override[c.id].x = true }) } if (t === "prices") { Object.keys(state.basePrices).forEach(k => state.companies[k].price = state.basePrices[k]) } persist(); renderAll() });
-  $("#applyD").onclick = () => { const d = { gh: +$("#dg").value || 0, pro: +$("#dp").value || 0, x: +$("#dx").value || 0 }; Object.keys(d).forEach(k => state.companies[k].price = state.basePrices[k] * (1 + d[k] / 100)); persist(); renderAll() };
+  $$("[data-scn]").forEach(b => b.onclick = () => { const t = b.dataset.scn; if (t === "historic") { criteria.forEach(c => { state.scores[c.id].gh = c.hist.gh; state.scores[c.id].pro = c.hist.pro }) } if (t === "x50") { criteria.forEach(c => { state.scores[c.id].x = c.max; state.override[c.id].x = true }) } if (t === "x45") { criteria.forEach(c => { state.scores[c.id].x = M1Calc.calculateScoreAtRatio({ maxScore: c.max, ratio: .9 }).result; state.override[c.id].x = true }) } if (t === "prices") { Object.keys(state.basePrices).forEach(k => state.companies[k].price = state.basePrices[k]) } persist(); renderAll() });
+  $("#applyD").onclick = () => { const d = { gh: +$("#dg").value || 0, pro: +$("#dp").value || 0, x: +$("#dx").value || 0 }; Object.keys(d).forEach(k => state.companies[k].price = M1Calc.applyPercentageVariation(state.basePrices[k], d[k]).result); persist(); renderAll() };
 }
 function renderRules() {
   $("#rulesEngine").innerHTML = `
