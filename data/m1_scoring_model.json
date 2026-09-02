@@ -1,0 +1,55 @@
+{
+  "source_basis": {
+    "technical_max": 50,
+    "technical_min_solvency": 37.5,
+    "economic_max": 50,
+    "historic": {
+      "GH": {
+        "quality": 15,
+        "capacity": 15,
+        "experience_specialty": 15,
+        "contract_compliance": 3,
+        "technical_total": 48,
+        "price_without_vat": 425409715.32
+      },
+      "PROGONZA_INARVI": {
+        "quality": 6.4,
+        "capacity": 14,
+        "experience_specialty": 13,
+        "contract_compliance": 2,
+        "technical_total": 35.4,
+        "price_without_vat": 384946522.04
+      }
+    }
+  },
+  "microcriteria": {
+    "human_resources_6": {
+      "minimum_staff_gate": true,
+      "experience": 1,
+      "academic_preparation": 4,
+      "software_2d_3d": 1
+    },
+    "financial_capacity_6": {
+      "working_capital_first_3_months": 4,
+      "liquidity_ratio_ge_1": 1,
+      "debt_ratio_le_50pct": 1
+    },
+    "experience_6": {
+      "rsu_500_tpd": 3,
+      "electrical_automation": 1,
+      "steel_structures": 1,
+      "industrial_buildings": 1
+    },
+    "specialty_6": {
+      "design_build_startup_500_tpd": 2,
+      "operated_last_1825_days": 2,
+      "oem_3_mexico_10_international": 2
+    }
+  },
+  "engine_notes": [
+    "Quality subrubrics are source-defined at their stated maxima; historical partial scores are preserved from the fallo and remain manually editable.",
+    "Human-resources experience is modeled proportionally because the criterion describes proportional scoring relative to the maximum years accredited.",
+    "Academic preparation is parameterized in the application to support prequalification; review the final scoring interpretation against the active convocatoria/junta before bid submission.",
+    "Contract-compliance helper uses an internal 1-point-per-compliant-reference up to 3 for planning; manual override is available because the source describes proportional comparison among bidders."
+  ]
+}

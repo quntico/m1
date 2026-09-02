@@ -1,0 +1,19 @@
+{
+  "name": "m1-precal",
+  "version": "1.0.0",
+  "description": "Motor editable para Antigravity.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@neon/config": "^1.1.0"
+  }
+}

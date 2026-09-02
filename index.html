@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>M1 Precalificación Engine</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+
+<body>
+  <div class="shell">
+    <aside class="side">
+
+      <div class="side-content">
+        <div class="logo">
+          <div class="mark">M1</div>
+          <div><b>Precalificación</b><span>Engine 4.0</span></div>
+        </div>
+        <nav>
+          <button class="nav active" data-view="cockpit">0. Dashboard Principal</button>
+
+          <div
+            style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin: 20px 0 8px 14px; letter-spacing:1px;">
+            Simulador de Precalificación</div>
+          <button class="nav" data-view="technical">1. Motor técnico</button>
+          <button class="nav" data-view="hr">2. Recursos humanos</button>
+          <button class="nav" data-view="experience">3. Experiencia / OEM</button>
+          <button class="nav" data-view="economic">4. Capacidad financiera</button>
+          <button class="nav" data-view="price">5. Precio / ranking</button>
+
+          <div
+            style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin: 20px 0 8px 14px; letter-spacing:1px;">
+            Herramientas Adicionales</div>
+          <button class="nav" data-view="documents">6. Expediente / evidencias</button>
+          <button class="nav" data-view="scenarios">7. Escenarios</button>
+          <button class="nav" data-view="rules">8. Mecánica de evaluación</button>
+        </nav>
+
+        <div class="foot">M1 · CONAGUA<br>LO-16-B00-016B00985-N-31-2026</div>
+      </div>
+    </aside>
+
+    <main>
+      <header class="top">
+        <div>
+          <span class="eyebrow">MIRAMAR 1 · MOTOR DE PRECALIFICACIÓN</span>
+          <h1 id="viewTitle">Dashboard Principal</h1>
+          <p id="viewSub">Evaluación, brechas, riesgos y cálculo de puntos totales para la licitación.</p>
+        </div>
+        <div class="actions">
+          <button id="adminBtn" class="action-btn outline"
+            style="color:var(--text-dark);border-color:var(--line-strong);display:flex;align-items:center;justify-content:center;padding:10px"
+            title="Administración">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </button>
+          <label class="action-btn outline">Importar <input id="jsonInput" type="file" accept=".json" hidden></label>
+          <button class="action-btn outline" id="jsonBtn">Exportar JSON</button>
+          <button class="action-btn outline" id="loadBtn">Abrir</button>
+          <button class="action-btn outline" id="saveBtn">Guardar</button>
+          <button class="action-btn outline warn" id="resetBtn">Restaurar</button>
+          <button class="action-btn primary" id="pdfBtn">PDF Ejecutivo</button>
+        </div>
+      </header>
+
+      <section class="view active" id="view-cockpit">
+        <div id="hero"></div>
+        <div class="grid3" id="companyCards"></div>
+        <div class="grid2">
+          <section class="panel">
+            <div class="ph">
+              <div><span class="eyebrow">BRECHAS</span>
+                <h2>Qué falta para maximizar Consorcio X</h2>
+              </div>
+            </div>
+            <div id="breaches"></div>
+          </section>
+          <section class="panel">
+            <div class="ph">
+              <div><span class="eyebrow">RIESGO</span>
+                <h2>Semáforo de desechamiento</h2>
+              </div>
+            </div>
+            <div id="fatalRisks"></div>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="ph">
+            <div><span class="eyebrow">RANKING</span>
+              <h2>Resultado técnico-económico</h2>
+            </div>
+          </div>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Empresa</th>
+                  <th>Técnica</th>
+                  <th>Solvencia</th>
+                  <th>Económica</th>
+                  <th>Total</th>
+                  <th>Oferta sin IVA</th>
+                </tr>
+              </thead>
+              <tbody id="ranking"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-technical">
+        <section class="panel">
+          <div class="ph split">
+            <div><span class="eyebrow">50 PUNTOS</span>
+              <h2>Matriz técnica integral</h2>
+              <p>Consorcio X se calcula desde microcriterios. GH y PROGONZA permanecen precargados según fallo, pero
+                pueden editarse.</p>
+            </div>
+            <div class="tools"><input id="techSearch" type="search" placeholder="Buscar criterio / AT..."><button
+                id="maxXBtn">Completar X</button><button id="clearXBtn">Limpiar X</button></div>
+          </div>
+          <div id="technicalMatrix"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-hr">
+        <div class="grid2">
+          <section class="panel">
+            <div class="ph">
+              <div><span class="eyebrow">II.a · 6.0 PTS</span>
+                <h2>Plantilla mínima y recursos humanos</h2>
+              </div>
+            </div>
+            <div id="hrEngine"></div>
+          </section>
+          <section class="panel">
+            <div class="ph">
+              <div><span class="eyebrow">DIAGNÓSTICO</span>
+                <h2>Puntaje automático</h2>
+              </div>
+            </div>
+            <div id="hrResult"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-experience">
+        <div class="grid2">
+          <section class="panel">
+            <div class="ph">
+              <div><span class="eyebrow">III.a · 6.0 PTS</span>
+                <h2>Experiencia</h2>
+              </div>
+            </div>
+            <div id="expEngine"></div>
+          </section>
+          <section class="panel">
+            <div class="ph">
+              <div><span class="eyebrow">III.b · 6.0 PTS</span>
+                <h2>Especialidad / OEM</h2>
+              </div>
+            </div>
+            <div id="specEngine"></div>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="ph">
+            <div><span class="eyebrow">CONTRATOS</span>
+              <h2>Banco de referencias</h2>
+              <p>Registra contratos y marca qué condición acredita cada uno.</p>
+            </div><button id="addContractBtn">+ Agregar contrato</button>
+          </div>
+          <div id="contractsTable"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-economic">
+        <div class="grid2">
+          <section class="panel">
+            <div class="ph">
+              <div><span class="eyebrow">II.b · 6.0 PTS</span>
+                <h2>Capacidad económica</h2>
+              </div>
+            </div>
+            <div id="financeEngine"></div>
+          </section>
+          <section class="panel">
+            <div class="ph">
+              <div><span class="eyebrow">RESULTADO</span>
+                <h2>Ratios financieros</h2>
+              </div>
+            </div>
+            <div id="financeResult"></div>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="ph">
+            <div><span class="eyebrow">OTROS</span>
+              <h2>Discapacidad, MIPYMES y fabricante</h2>
+            </div>
+          </div>
+          <div id="capacityExtras"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-price">
+        <div class="grid3" id="priceCards"></div>
+        <section class="panel">
+          <div class="ph">
+            <div><span class="eyebrow">PRECIO</span>
+              <h2>Ofertas y sensibilidad</h2>
+            </div>
+          </div>
+          <div id="priceEngine"></div>
+        </section>
+        <section class="panel">
+          <div class="ph">
+            <div><span class="eyebrow">ESCENARIO</span>
+              <h2>Tabla comparativa</h2>
+            </div>
+          </div>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Empresa</th>
+                  <th>Técnica</th>
+                  <th>Precio</th>
+                  <th>Económica</th>
+                  <th>Total</th>
+                  <th>Dif. vs líder</th>
+                </tr>
+              </thead>
+              <tbody id="priceRanking"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-documents">
+        <section class="panel">
+          <div class="ph split">
+            <div><span class="eyebrow">EXPEDIENTE</span>
+              <h2>Checklist de evidencias</h2>
+              <p>Control interno de AT, contratos, cartas, CV, estados financieros y soportes.</p>
+            </div>
+            <div class="tools"><button id="allDocsBtn">Marcar todo</button><button id="csvBtn">Exportar CSV</button>
+            </div>
+          </div>
+          <div id="docsEngine"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-scenarios">
+        <div class="grid2">
+          <section class="panel">
+            <div class="ph">
+              <div><span class="eyebrow">WHAT-IF</span>
+                <h2>Escenarios rápidos</h2>
+              </div>
+            </div>
+            <div id="scenarioEngine"></div>
+          </section>
+          <section class="panel">
+            <div class="ph">
+              <div><span class="eyebrow">META</span>
+                <h2>Objetivo de Consorcio X</h2>
+              </div>
+            </div>
+            <div id="targetEngine"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-rules">
+        <div id="rulesEngine"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal" class="modalbg">
+    <div class="modal">
+      <div class="mh">
+        <h2>Cargar escenario</h2><button id="closeModal">✕</button>
+      </div>
+      <div id="savedList" class="saved-list"></div>
+    </div>
+  </div>
+
+  <div id="adminAuthModal" class="modalbg">
+    <div class="modal" style="width:380px; padding:0; overflow:hidden">
+      <div style="padding: 40px 32px; background:var(--bg); text-align:center">
+        <div style="font-size:40px; margin-bottom:16px; color:var(--text-dark)">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" style="opacity:0.8">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h2 style="margin:0 0 8px 0; font-size:20px; font-weight:900; color:var(--text-dark)">Acceso Restringido</h2>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:24px; line-height:1.5">Módulo exclusivo para
+          auditores y administradores del simulador.</p>
+        <input type="password" id="authPwdInput" placeholder="••••"
+          style="width:100%; padding:14px; border-radius:8px; border:1px solid var(--line-strong); margin-bottom:16px; text-align:center; font-size:20px; letter-spacing:12px; font-family:monospace; background:#fff">
+        <button id="authSubmitBtn" class="primary" style="width:100%; padding:14px; font-size:14px">Autorizar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="adminModal" class="modalbg">
+    <div class="modal" style="width:780px !important; padding:0; overflow:hidden;">
+      <div class="mh" style="padding: 24px 32px 0 32px; margin-bottom:24px;">
+        <h2 style="margin:0;font-weight:900;font-size:22px;color:var(--text-dark)">Panel de Control</h2><button
+          id="closeAdminModal">✕</button>
+      </div>
+      <div
+        style="padding: 0 32px 32px 32px; display:grid; grid-template-columns:1fr 1fr; gap:24px; background:var(--bg-panel)">
+
+        <div style="display:flex; flex-direction:column; gap:24px;">
+          <div style="background:#fff; padding:20px; border-radius:12px; border:1px solid var(--line-strong)">
+            <label
+              style="display:block; font-weight:900; margin-bottom:12px; font-size:12px; color:var(--text-dark)">STATUS
+              DEL SISTEMA</label>
+            <div
+              style="font-family:monospace; font-size:12px; color:var(--text-muted); line-height:1.6; background:var(--bg); padding:16px; border-radius:8px; margin-bottom: 16px;">
+              <div><span style="color:var(--accent);font-size:16px;vertical-align:middle;line-height:0">●</span> MOTOR
+                LÓGICO: <span style="font-weight:900; color:var(--text-dark)">200 OK</span></div>
+              <div id="sysSize" style="margin-top:6px">STORAGE AUTO-SAVE: Calculando...</div>
+              <div style="margin-top:6px">ESTRATEGIA IA: <span id="sysIaStatus"
+                  style="font-weight:900">Desconectada</span></div>
+              <div
+                style="margin-top:12px; border-top:1px dashed var(--line); padding-top:12px; color:var(--primary); font-weight:700">
+                Persistencia de datos activa y enlazada al motor técnico.</div>
+              <div style="margin-top:6px; color:var(--text-muted);">Sincronización Neon: <span id="sysCloudStatus"
+                  style="font-weight:900">Pendiente</span></div>
+            </div>
+            <button id="cloudSyncBtn" class="primary"
+              style="width:100%; padding:14px; font-size:13px; text-align:center; background:var(--text-dark); border-color:var(--text-dark)">☁️
+              Sincronizar a la Nube</button>
+          </div>
+
+          <div style="background:#fff; padding:20px; border-radius:12px; border:1px solid var(--line-strong)">
+            <label
+              style="display:block; font-weight:900; margin-bottom:12px; font-size:12px; color:var(--text-dark)">APARIENCIA
+              / COLOR DEL TEMA</label>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Sobreescribe la identidad de color a
+              nivel global en todos los módulos.</p>
+            <div style="display:flex; gap:16px; flex-wrap:wrap">
+              <button class="theme-color" data-color="#00A6B4"
+                style="width:32px;height:32px;border-radius:100px;background:#00A6B4;border:none;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.1)"></button>
+              <button class="theme-color" data-color="#10B981"
+                style="width:32px;height:32px;border-radius:100px;background:#10B981;border:none;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.1)"></button>
+              <button class="theme-color" data-color="#3B82F6"
+                style="width:32px;height:32px;border-radius:100px;background:#3B82F6;border:none;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.1)"></button>
+              <button class="theme-color" data-color="#8B5CF6"
+                style="width:32px;height:32px;border-radius:100px;background:#8B5CF6;border:none;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.1)"></button>
+              <button class="theme-color" data-color="#F97316"
+                style="width:32px;height:32px;border-radius:100px;background:#F97316;border:none;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.1)"></button>
+              <button class="theme-color" data-color="#121D2C"
+                style="width:32px;height:32px;border-radius:100px;background:#121D2C;border:none;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.1)"></button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:24px;">
+          <div style="background:#fff; padding:20px; border-radius:12px; border:1px solid var(--line-strong)">
+            <label
+              style="display:block; font-weight:900; margin-bottom:8px; font-size:12px; color:var(--text-dark)">CONEXIÓN:
+              CLAVE CLOUD API</label>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Desbloquea el análisis sintomático
+              conectando un motor LLM.</p>
+            <input type="password" id="apiKeyInput" placeholder="sk-..."
+              style="width:100%; padding:14px; border-radius:8px; border:1px solid var(--line); font-family:monospace; font-size:14px; background:var(--bg)">
+          </div>
+
+          <div style="background:#fff; padding:20px; border-radius:12px; border:1px solid var(--line-strong)">
+            <label
+              style="display:block; font-weight:900; margin-bottom:8px; font-size:12px; color:var(--text-dark)">EMPAQUETAR
+              PARA AUDITORÍA</label>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px; line-height:1.5;">Descarga todo el
+              código fuente del simulador (Lógica JS, CSS y Vistas HTML) en formato ZIP.</p>
+            <button id="exportZipBtn" class="primary"
+              style="width:100%; padding: 14px; font-size:13px; text-align:center">⬇ Exportar Código .ZIP</button>
+            <p id="sysLastExport" style="font-size:10px; color:var(--text-muted); text-align:center; margin:12px 0 0 0">
+              Ningún empaquetado reciente.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script src="assets/app.js"></script>
+</body>
+
+</html>
