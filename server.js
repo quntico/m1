@@ -21,16 +21,9 @@ const { BidArchitectService } = require('./src/agents/bidArchitect/BidArchitectS
 
 const app = express();
 
-// Strict CORS
-const allowedOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
 app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    }
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
 app.use(express.json({ limit: '10mb' }));
 

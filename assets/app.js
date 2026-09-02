@@ -457,13 +457,29 @@ const _savedTheme = localStorage.getItem('m1_theme');
 if (_savedTheme && themes[_savedTheme]) applyTheme(_savedTheme);
 
 // ─── LOGO / FAVICON UPLOAD ──────────────────────────────────────
+function resizeImage(file, maxWidth, maxHeight, callback) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let width = img.width, height = img.height;
+      if (width > height && width > maxWidth) { height = Math.round(height * (maxWidth / width)); width = maxWidth; }
+      else if (height > maxHeight) { width = Math.round(width * (maxHeight / height)); height = maxHeight; }
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      callback(canvas.toDataURL('image/png', 0.8));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
 function uploadLogo(input, mode) {
   const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async e => {
-    const src = e.target.result;
-
-    // Upload to server
+  // Resize to max 300x300 for logos to prevent localStorage max quota crashes
+  resizeImage(file, 300, 300, async (src) => {
     try {
       const r = await fetch('http://localhost:3001/api/branding', {
         method: 'POST',
@@ -471,32 +487,25 @@ function uploadLogo(input, mode) {
         body: JSON.stringify({ type: 'logo-' + mode, dataUrl: src })
       });
       const d = await r.json();
-      if (d.ok) {
-        localStorage.setItem('m1_logo_' + mode, 'http://localhost:3001/' + d.url);
-      }
+      if (d.ok) localStorage.setItem('m1_logo_' + mode, 'http://localhost:3001/' + d.url);
     } catch (err) {
-      console.warn("Server upload failed, using local base64 fallback");
-      localStorage.setItem('m1_logo_' + mode, src);
+      console.warn("API Error, fallback to base64", err);
+      try { localStorage.setItem('m1_logo_' + mode, src); } catch (e) { alert('El logo es muy pesado incluso comprimido.'); }
     }
 
     const finalUrl = localStorage.getItem('m1_logo_' + mode);
     const img = document.getElementById('logo' + (mode === 'light' ? 'Light' : 'Dark') + 'Img');
     const placeholder = document.getElementById('logo' + (mode === 'light' ? 'Light' : 'Dark') + 'Placeholder');
-    img.src = finalUrl; img.style.display = 'block';
+    if (img) { img.src = finalUrl; img.style.display = 'block'; }
     if (placeholder) placeholder.style.display = 'none';
 
     applyBranding();
-  };
-  reader.readAsDataURL(file);
+  });
 }
 
 function uploadFavicon(input) {
   const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async e => {
-    const src = e.target.result;
-
-    // Upload to server
+  resizeImage(file, 64, 64, async (src) => {
     try {
       const r = await fetch('http://localhost:3001/api/branding', {
         method: 'POST',
@@ -504,23 +513,21 @@ function uploadFavicon(input) {
         body: JSON.stringify({ type: 'favicon', dataUrl: src })
       });
       const d = await r.json();
-      if (d.ok) {
-        localStorage.setItem('m1_favicon', 'http://localhost:3001/' + d.url);
-      }
+      if (d.ok) localStorage.setItem('m1_favicon', 'http://localhost:3001/' + d.url);
     } catch (err) {
-      localStorage.setItem('m1_favicon', src);
+      try { localStorage.setItem('m1_favicon', src); } catch (e) { }
     }
 
     const finalUrl = localStorage.getItem('m1_favicon');
-    const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
-    link.rel = 'icon'; link.href = finalUrl;
-    document.head.appendChild(link);
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+    link.href = finalUrl + "?t=" + Date.now(); // cache buster
+
     const prev = document.getElementById('faviconPreview');
     if (prev) { prev.src = finalUrl; prev.style.display = 'block'; }
     const status = document.getElementById('faviconStatus');
-    if (status) status.textContent = '✅ Favicon sincronizado con la nube';
-  };
-  reader.readAsDataURL(file);
+    if (status) status.textContent = '✅ Favicon actualizado y persistente';
+  });
 }
 
 function applyBranding() {
@@ -528,18 +535,16 @@ function applyBranding() {
   const dark = localStorage.getItem('m1_logo_dark');
   const mark = document.querySelector('.mark');
   let url = light || 'assets/m1-logo.png';
-  if (mark) { mark.innerHTML = `<img src="${url}" style="height:36px;width:36px;object-fit:contain;border-radius:8px">`; }
+  if (mark) { mark.innerHTML = `<img src="${url}?t=${Date.now()}" style="height:36px;width:36px;object-fit:contain;border-radius:8px">`; }
 }
 
 // Restore branding on load
 (() => {
   const fav = localStorage.getItem('m1_favicon');
-  if (fav) { const l = document.querySelector("link[rel~='icon']") || document.createElement('link'); l.rel = 'icon'; l.href = fav; document.head.appendChild(l); }
+  if (fav) { let l = document.querySelector("link[rel~='icon']"); if (!l) { l = document.createElement('link'); l.rel = 'icon'; document.head.appendChild(l); } l.href = fav; }
   const light = localStorage.getItem('m1_logo_light');
-  const dark = localStorage.getItem('m1_logo_dark');
   if (light) { const i = document.getElementById('logoLightImg'); if (i) { i.src = light; i.style.display = 'block'; const p = document.getElementById('logoLightPlaceholder'); if (p) p.style.display = 'none'; } }
-
+  const dark = localStorage.getItem('m1_logo_dark');
   if (dark) { const i = document.getElementById('logoDarkImg'); if (i) { i.src = dark; i.style.display = 'block'; const p = document.getElementById('logoDarkPlaceholder'); if (p) p.style.display = 'none'; } }
   applyBranding();
 })();
-
