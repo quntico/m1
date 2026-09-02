@@ -37,10 +37,15 @@
 
           <div
             style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin: 20px 0 8px 14px; letter-spacing:1px;">
+            Auditoría Ejecutiva</div>
+          <button class="nav" data-view="audit">6. Control Center</button>
+
+          <div
+            style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin: 20px 0 8px 14px; letter-spacing:1px;">
             Herramientas Adicionales</div>
-          <button class="nav" data-view="documents">6. Expediente / evidencias</button>
-          <button class="nav" data-view="scenarios">7. Escenarios</button>
-          <button class="nav" data-view="rules">8. Mecánica de evaluación</button>
+          <button class="nav" data-view="documents">7. Expediente / evidencias</button>
+          <button class="nav" data-view="scenarios">8. Escenarios</button>
+          <button class="nav" data-view="rules">9. Mecánica de evaluación</button>
         </nav>
 
         <div class="foot">M1 · CONAGUA<br>LO-16-B00-016B00985-N-31-2026</div>
@@ -284,7 +289,11 @@
       </section>
 
       <section class="view" id="view-rules">
-        <div id="rulesEngine"></div>
+        <div id="rulesMatrix"></div>
+      </section>
+
+      <section class="view" id="view-audit">
+        <div id="auditContainer"></div>
       </section>
     </main>
   </div>
@@ -402,6 +411,8 @@
   </div>
   <script src="src/calculations/m1Calculations.js"></script>
   <script src="src/business/auditTrail.js"></script>
+  <script src="src/ui/adapters/auditViewAdapter.js"></script>
+  <script src="src/ui/auditControlCenter.js"></script>
   <script src="assets/app.js"></script>
 </body>
 
