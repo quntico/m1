@@ -9,9 +9,10 @@
 
 ## Motor de auditoría
 
-- Implementar modo `AUDITORIA` vs `SIMULACION`.
-- Hacer que cada punto técnico dependa de evidencia validada en modo auditoría.
-- Registrar overrides con score automático, score manual, motivo, revisor y fecha.
+- Conectar el modo `AUDITORIA` con un repositorio documental real de expedientes.
+- Ampliar overrides con usuario autenticado cuando exista backend.
+- Crear bitácora inmutable de cambios de estado y score.
+- Sustituir checks simples de experiencia/OEM por evidencia validada desde contratos y referencias.
 
 ## Datos
 

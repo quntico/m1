@@ -31,5 +31,11 @@ Estas fórmulas se centralizaron en `src/calculations/m1Calculations.js` para ev
 
 El motor marca como `REQUIERE_VALIDACION` las reglas que dependen de interpretación, evidencia documental o supuestos competitivos.
 
+## Auditoría y trazabilidad
+
+Se agregó modo `AUDITORIA` para evitar que un puntaje automático cuente sin soporte.
+
+En auditoría, cada criterio requiere evidencia, origen, responsable, fecha y estado `VALIDADO`. Si hay override manual, se conserva el score automático, se registra el score manual y se exige motivo.
+
 ## Recomendación de uso
 Usar el modo automático para identificar huecos y el override manual únicamente cuando el equipo jurídico/técnico haya confirmado cómo aplicará CONAGUA la proporcionalidad en la nueva convocatoria.

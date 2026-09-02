@@ -6,6 +6,8 @@ Centralizar las fórmulas del sistema en `src/calculations/m1Calculations.js` pa
 
 El motor no depende de HTML, DOM, CSS, eventos de UI ni `localStorage`.
 
+La decisión de aceptar o bloquear un puntaje por evidencia vive en `src/business/auditTrail.js`, no en este módulo de cálculo.
+
 ## Contrato de cada cálculo
 
 Cada función devuelve metadatos trazables:

@@ -44,10 +44,13 @@ Ejecuta la suite unitaria del motor de cálculo.
 - `assets/styles.css`
 - `assets/app.js`
 - `src/calculations/m1Calculations.js`
+- `src/business/auditTrail.js`
 - `tests/calculations/m1Calculations.test.js`
+- `tests/business/auditTrail.test.js`
 - `data/m1_scoring_model.json`
 - `docs/ARCHITECTURE.md`
 - `docs/CALCULATIONS.md`
+- `docs/AUDIT_TRAIL.md`
 - `docs/NOTAS_DE_IMPLEMENTACION.md`
 
 ## Importante
@@ -62,3 +65,9 @@ Las reglas internas están documentadas y siempre existe override manual en la m
 Las fórmulas M1 viven en `src/calculations/m1Calculations.js`. La interfaz consume ese módulo y no debe duplicar fórmulas en HTML.
 
 Cada cálculo devuelve fórmula, entradas, resultado, unidades, fuente/regla, confianza, estado y advertencias. Las reglas ambiguas se marcan como `REQUIERE_VALIDACION`.
+
+## Auditoría
+
+El sistema distingue `SIMULACION` de `AUDITORIA`.
+
+En `AUDITORIA`, un puntaje sólo cuenta si tiene evidencia, origen, responsable, fecha y estado `VALIDADO`. Los overrides manuales conservan el score automático y exigen motivo.

@@ -10,8 +10,10 @@ Estructura principal:
 - `assets/styles.css`: estilos visuales.
 - `assets/app.js`: orquestación de UI, estado local, eventos, renderizado y exportaciones.
 - `src/calculations/m1Calculations.js`: motor centralizado de cálculo M1.
+- `src/business/auditTrail.js`: motor de auditoría y trazabilidad.
 - `data/m1_scoring_model.json`: datos base del modelo de scoring.
 - `tests/calculations/m1Calculations.test.js`: pruebas unitarias del motor de cálculo.
+- `tests/business/auditTrail.test.js`: pruebas unitarias del motor de auditoría.
 - `docs/`: documentación técnica.
 
 ## Separación de responsabilidades
@@ -21,6 +23,7 @@ La arquitectura objetivo mantiene límites claros:
 - UI: `index.html`, renderizado y eventos en `assets/app.js`.
 - estilos: `assets/styles.css`.
 - calculations: `src/calculations/m1Calculations.js`.
+- business logic: `src/business/auditTrail.js`.
 - datos: `data/`.
 - documentación: `docs/`.
 - pruebas: `tests/`.
@@ -46,6 +49,30 @@ Cada cálculo devuelve:
 - desglose cuando aplica.
 
 Cuando una regla es ambigua, el motor marca `REQUIERE_VALIDACION`.
+
+## Motor de auditoría
+
+La capa de auditoría vive en `src/business/auditTrail.js`.
+
+Principio rector:
+
+```text
+DATO -> EVIDENCIA -> VALIDACION -> REQUISITO -> PUNTAJE
+```
+
+El sistema distingue `SIMULACION` de `AUDITORIA`.
+
+En `SIMULACION` se conservan escenarios y edición manual para análisis competitivo.
+
+En `AUDITORIA` ningún puntaje automático se otorga sin:
+
+- evidencia;
+- origen;
+- responsable;
+- fecha;
+- estado `VALIDADO`.
+
+Los overrides manuales conservan `automaticScore`, guardan `manualScore`, exigen motivo y requieren evidencia validada.
 
 ## Fórmulas localizadas
 
@@ -75,6 +102,7 @@ No se cambiaron reglas visuales ni flujos de usuario.
 - `node_modules` aparece versionado en el repositorio. Debe retirarse en una tarea separada y con revisión, porque afecta muchos archivos.
 - El panel de administración contiene una contraseña fija en frontend y almacenamiento de API key en `localStorage`. Debe corregirse en una tarea de seguridad dedicada.
 - `assets/app.js` todavía concentra UI, persistencia y exportaciones; el refactor debe continuar por capas pequeñas.
+- El modo `AUDITORIA` ya bloquea puntajes sin evidencia, pero la captura documental todavía debe evolucionar a repositorio real de expedientes.
 - Experiencia, especialidad, cumplimiento y reglas académicas siguen marcadas como `REQUIERE_VALIDACION` hasta validar fuente normativa/evidencia.
 
 ## Validación
