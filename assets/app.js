@@ -323,11 +323,7 @@ $$(".theme-color").forEach(btn => {
     localStorage.setItem("m1_theme_color", c);
   }
 });
-const savedTheme = localStorage.getItem("m1_theme_color");
-if (savedTheme) {
-  document.documentElement.style.setProperty('--accent', savedTheme);
-  document.documentElement.style.setProperty('--accent-hover', savedTheme);
-}
+// (theme restored below by the full applyTheme system)
 
 $("#exportZipBtn").onclick = async () => {
   if (!window.JSZip) return alert("Se requiere internet o recargar la página para cargar JSZip.");
@@ -380,6 +376,135 @@ document.addEventListener("keydown", (e) => {
 
 const toggleBtn = document.getElementById('toggleMenuBtn'); if (toggleBtn) { toggleBtn.onclick = () => { document.querySelector('.shell').classList.toggle('collapsed'); toggleBtn.querySelector('i').className = document.querySelector('.shell').classList.contains('collapsed') ? 'ph-bold ph-caret-right' : 'ph-bold ph-caret-left'; }; }
 
-$('#adminBtn').onclick = () => document.getElementById('adminModal').classList.add('open');
-$('#closeAdminBtn').onclick = () => document.getElementById('adminModal').classList.remove('open');
-$('#saveAdminBtn').onclick = () => { localStorage.setItem('m1_api_key', document.getElementById('apiCloudKey').value); document.getElementById('adminModal').classList.remove('open'); };
+// ─── ADMIN MODAL ────────────────────────────────────────────────
+function showAdminTab(tabId) {
+  document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
+  document.getElementById(tabId).style.display = 'block';
+  document.querySelectorAll('.admin-tab').forEach(b => {
+    b.style.color = 'var(--text-muted)';
+    b.style.borderBottom = '2px solid transparent';
+  });
+  const active = document.getElementById('atab-' + tabId.replace('tab-', ''));
+  if (active) { active.style.color = 'var(--accent)'; active.style.borderBottom = '2px solid var(--accent)'; }
+}
+
+async function saveApiKey() {
+  const key = document.getElementById('apiCloudKey').value.trim();
+  const status = document.getElementById('apiSaveStatus');
+  if (!key.startsWith('sk-')) {
+    status.style.display = 'block'; status.style.color = '#EF4444'; status.textContent = '⚠️ Debe comenzar con sk-'; return;
+  }
+  try {
+    const r = await fetch('http://localhost:3001/api/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ apiKey: key }) });
+    const d = await r.json();
+    if (d.ok) {
+      localStorage.setItem('m1_api_key', key); // also store locally as fallback
+      status.style.display = 'block'; status.style.color = '#10B981'; status.textContent = '✅ API Key guardada permanentemente. El agente está ONLINE.';
+    } else { status.style.display = 'block'; status.style.color = '#EF4444'; status.textContent = '❌ Error al guardar en el servidor.'; }
+  } catch (e) {
+    localStorage.setItem('m1_api_key', key);
+    status.style.display = 'block'; status.style.color = '#F59E0B'; status.textContent = '⚠️ Guardada localmente. El servidor API no responde.';
+  }
+}
+
+// Load saved API key into field when modal opens
+document.getElementById('adminBtn').onclick = async () => {
+  document.getElementById('adminModal').style.display = 'flex';
+  const stored = localStorage.getItem('m1_api_key') || '';
+  if (stored) document.getElementById('apiCloudKey').value = stored;
+  // Check server
+  try {
+    const r = await fetch('http://localhost:3001/api/config');
+    const d = await r.json();
+    if (d.hasApiKey && !stored) {
+      document.getElementById('apiCloudKey').value = '(guardada en servidor)';
+    }
+  } catch (e) { }
+};
+
+// Restore API key on page boot from localStorage
+window.addEventListener('DOMContentLoaded', () => {
+  const k = localStorage.getItem('m1_api_key');
+  if (k) { /* key available as fallback for BidArchitect panel */ }
+});
+
+// ─── THEME SWITCHER ─────────────────────────────────────────────
+const themes = {
+  emerald: { accent: '#10B981', accentHover: '#059669', accentBg: 'rgba(16,185,129,0.1)' },
+  blue: { accent: '#3B82F6', accentHover: '#2563EB', accentBg: 'rgba(59,130,246,0.1)' },
+  violet: { accent: '#8B5CF6', accentHover: '#7C3AED', accentBg: 'rgba(139,92,246,0.1)' },
+  amber: { accent: '#F59E0B', accentHover: '#D97706', accentBg: 'rgba(245,158,11,0.1)' },
+  red: { accent: '#EF4444', accentHover: '#DC2626', accentBg: 'rgba(239,68,68,0.1)' },
+  cyan: { accent: '#06B6D4', accentHover: '#0891B2', accentBg: 'rgba(6,182,212,0.1)' },
+  rose: { accent: '#F43F5E', accentHover: '#E11D48', accentBg: 'rgba(244,63,94,0.1)' },
+  slate: { accent: '#475569', accentHover: '#334155', accentBg: 'rgba(71,85,105,0.1)' },
+};
+function applyTheme(name) {
+  const t = themes[name]; if (!t) return;
+  const root = document.documentElement;
+  root.style.setProperty('--accent', t.accent);
+  root.style.setProperty('--accent-hover', t.accentHover);
+  root.style.setProperty('--accent-bg', t.accentBg);
+  root.style.setProperty('--success', t.accent);
+  root.style.setProperty('--a', t.accent);
+  localStorage.setItem('m1_theme', name);
+  // Visual feedback: mark active swatch
+  document.querySelectorAll('.theme-swatch').forEach(b => b.style.outline = '');
+  event.currentTarget.style.outline = '3px solid #0F172A';
+}
+// Restore theme on load
+const _savedTheme = localStorage.getItem('m1_theme');
+if (_savedTheme && themes[_savedTheme]) applyTheme(_savedTheme);
+
+// ─── LOGO / FAVICON UPLOAD ──────────────────────────────────────
+function uploadLogo(input, mode) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const src = e.target.result;
+    localStorage.setItem('m1_logo_' + mode, src);
+    const img = document.getElementById('logo' + (mode === 'light' ? 'Light' : 'Dark') + 'Img');
+    const placeholder = document.getElementById('logo' + (mode === 'light' ? 'Light' : 'Dark') + 'Placeholder');
+    img.src = src; img.style.display = 'block';
+    if (placeholder) placeholder.style.display = 'none';
+    // Apply to sidebar mark if needed
+    applyBranding();
+  };
+  reader.readAsDataURL(file);
+}
+
+function uploadFavicon(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const src = e.target.result;
+    localStorage.setItem('m1_favicon', src);
+    const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
+    link.rel = 'icon'; link.href = src;
+    document.head.appendChild(link);
+    const prev = document.getElementById('faviconPreview');
+    prev.src = src; prev.style.display = 'block';
+    document.getElementById('faviconStatus').textContent = '✅ Favicon aplicado';
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyBranding() {
+  const light = localStorage.getItem('m1_logo_light');
+  const dark = localStorage.getItem('m1_logo_dark');
+  // You can apply logo to sidebar .mark element if needed
+  const mark = document.querySelector('.mark');
+  if (mark && light) { mark.innerHTML = `<img src="${light}" style="height:28px;width:28px;object-fit:contain;border-radius:6px">`; }
+}
+
+// Restore branding on load
+(() => {
+  const fav = localStorage.getItem('m1_favicon');
+  if (fav) { const l = document.querySelector("link[rel~='icon']") || document.createElement('link'); l.rel = 'icon'; l.href = fav; document.head.appendChild(l); }
+  const light = localStorage.getItem('m1_logo_light');
+  const dark = localStorage.getItem('m1_logo_dark');
+  if (light) { const i = document.getElementById('logoLightImg'); if (i) { i.src = light; i.style.display = 'block'; const p = document.getElementById('logoLightPlaceholder'); if (p) p.style.display = 'none'; } }
+  if (dark) { const i = document.getElementById('logoDarkImg'); if (i) { i.src = dark; i.style.display = 'block'; const p = document.getElementById('logoDarkPlaceholder'); if (p) p.style.display = 'none'; } }
+  applyBranding();
+})();
+

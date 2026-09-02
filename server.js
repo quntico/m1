@@ -5,6 +5,18 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+// Boot: load persisted config before anything else
+const _bootConfigPath = path.join(__dirname, 'data', 'projects', 'M1', 'config.json');
+if (fs.existsSync(_bootConfigPath)) {
+    try {
+        const _bootCfg = JSON.parse(fs.readFileSync(_bootConfigPath, 'utf-8'));
+        if (_bootCfg.apiKey && _bootCfg.apiKey.startsWith('sk-')) {
+            process.env.OPENAI_API_KEY = _bootCfg.apiKey;
+            console.log('[M1] API Key cargada desde config persistente.');
+        }
+    } catch (e) { }
+}
+
 const { BidArchitectService } = require('./src/agents/bidArchitect/BidArchitectService');
 
 const app = express();
@@ -57,6 +69,34 @@ const upload = multer({ storage });
 // API Endpoints
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', service: 'bid-architect' });
+});
+
+// Persistent config file
+const configFile = path.join(projectBasePath, 'config.json');
+if (!fs.existsSync(configFile)) {
+    fs.writeFileSync(configFile, JSON.stringify({ apiKey: '' }), 'utf-8');
+}
+const getConfig = () => { try { return JSON.parse(fs.readFileSync(configFile, 'utf-8')); } catch (e) { return {}; } };
+const saveConfig = (cfg) => fs.writeFileSync(configFile, JSON.stringify(cfg, null, 2), 'utf-8');
+
+app.get('/api/config', (req, res) => {
+    const cfg = getConfig();
+    // Never expose key directly – just confirm if one is set
+    res.json({ hasApiKey: !!(cfg.apiKey && cfg.apiKey.startsWith('sk-')) });
+});
+
+app.post('/api/config', (req, res) => {
+    try {
+        const { apiKey } = req.body;
+        const cfg = getConfig();
+        if (apiKey !== undefined) cfg.apiKey = apiKey;
+        saveConfig(cfg);
+        // Inject into process.env for the current session
+        if (apiKey) process.env.OPENAI_API_KEY = apiKey;
+        res.json({ ok: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to save config' });
+    }
 });
 
 app.post('/api/chat', async (req, res) => {
