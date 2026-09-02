@@ -481,16 +481,30 @@ function uploadLogo(input, mode) {
   // Resize to max 300x300 for logos to prevent localStorage max quota crashes
   resizeImage(file, 300, 300, async (src) => {
     try {
-      const r = await fetch('http://localhost:3001/api/branding', {
+      const host = window.location.hostname || 'localhost';
+      const r = await fetch(`http://${host}:3001/api/branding`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'logo-' + mode, dataUrl: src })
       });
+
+      if (!r.ok) throw new Error('Servidor retornó error HTTP ' + r.status);
       const d = await r.json();
-      if (d.ok) localStorage.setItem('m1_logo_' + mode, 'http://localhost:3001/' + d.url);
+
+      if (d.ok) {
+        localStorage.removeItem('m1_logo_' + mode); // Liberar memoria
+        localStorage.setItem('m1_logo_' + mode, `http://${host}:3001/` + d.url);
+      }
     } catch (err) {
       console.warn("API Error, fallback to base64", err);
-      try { localStorage.setItem('m1_logo_' + mode, src); } catch (e) { alert('El logo es muy pesado incluso comprimido.'); }
+      // Delete old large images in case localStorage is jammed
+      localStorage.removeItem('m1_logo_' + mode);
+
+      try {
+        localStorage.setItem('m1_logo_' + mode, src);
+      } catch (e) {
+        alert('Caché saturada y el servidor Node no responde. \\n\\nPOR FAVOR CERRAR ESTA VENTANA Y REINICIAR EL SERVIDOR EJECUTANDO: \\nnode server.js');
+      }
     }
 
     const finalUrl = localStorage.getItem('m1_logo_' + mode);
@@ -507,14 +521,21 @@ function uploadFavicon(input) {
   const file = input.files[0]; if (!file) return;
   resizeImage(file, 64, 64, async (src) => {
     try {
-      const r = await fetch('http://localhost:3001/api/branding', {
+      const host = window.location.hostname || 'localhost';
+      const r = await fetch(`http://${host}:3001/api/branding`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'favicon', dataUrl: src })
       });
+      if (!r.ok) throw new Error('Servidor retornó HTTP ' + r.status);
       const d = await r.json();
-      if (d.ok) localStorage.setItem('m1_favicon', 'http://localhost:3001/' + d.url);
+      if (d.ok) {
+        localStorage.removeItem('m1_favicon');
+        localStorage.setItem('m1_favicon', `http://${host}:3001/` + d.url);
+      }
     } catch (err) {
+      console.warn("Favicon API Error, fallback to base64", err);
+      localStorage.removeItem('m1_favicon');
       try { localStorage.setItem('m1_favicon', src); } catch (e) { }
     }
 
