@@ -191,7 +191,9 @@ function renderScenario() {
   $("#applyD").onclick = () => { const d = { gh: +$("#dg").value || 0, pro: +$("#dp").value || 0, x: +$("#dx").value || 0 }; Object.keys(d).forEach(k => state.companies[k].price = M1Calc.applyPercentageVariation(state.basePrices[k], d[k]).result); persist(); renderAll() };
 }
 function renderRules() {
-  $("#rulesEngine").innerHTML = `
+  const el = $("#rulesMatrix");
+  if (!el) return;
+  el.innerHTML = `
     <div class="grid2">
       <section class="panel">
         <div class="ph"><div><span class="eyebrow">TÉCNICA - 50 PUNTOS</span><h2>I. Calidad de la obra (15 pts)</h2></div></div>
@@ -228,11 +230,12 @@ function renderRules() {
     </div>
   `;
 }
-function renderAll() { syncAuto(); renderCockpit(); renderTechnical(); renderHR(); renderExperience(); renderFinance(); renderPrice(); renderDocs(); renderScenario(); renderRules(); bindScores() }
+function renderAll() { syncAuto(); renderCockpit(); renderTechnical(); renderHR(); renderExperience(); renderFinance(); renderPrice(); renderDocs(); renderScenario(); renderRules(); if (typeof window.renderAudit === 'function') window.renderAudit(); bindScores() }
 renderAll();
 
-const titles = { cockpit: ["Dashboard Principal", "Evaluación, brechas, riesgos y cálculo de puntos totales para la licitación."], technical: ["Motor técnico", "Matriz de 50 puntos con puntajes históricos y cálculo de Consorcio X."], hr: ["Recursos humanos", "Motor de 6 puntos para plantilla, experiencia, preparación académica y software."], experience: ["Experiencia / OEM", "Contratos, especialidad, operación y referencias nacionales/internacionales del fabricante."], economic: ["Capacidad financiera", "Capital de trabajo, liquidez, apalancamiento y subrubros de capacidad."], price: ["Precio / ranking", "Cálculo económico de 50 puntos para propuestas técnicamente solventes."], documents: ["Expediente / evidencias", "Checklist de documentación y responsables internos."], scenarios: ["Escenarios", "Sensibilidad técnica y económica para la toma de decisiones."], rules: ["Mecánica de evaluación", "Mapa de distribución interactivo de los puntos de la licitación y reglas de cálculo del algoritmo."] };
-$$(".nav").forEach(b => b.onclick = () => { $$(".nav").forEach(n => n.classList.remove("active")); b.classList.add("active"); $$(".view").forEach(v => v.classList.remove("active")); $("#view-" + b.dataset.view).classList.add("active"); $("#viewTitle").textContent = titles[b.dataset.view][0]; $("#viewSub").textContent = titles[b.dataset.view][1] });
+const titles = { cockpit: ["Dashboard Principal", "Evaluación, brechas, riesgos y cálculo de puntos totales para la licitación."], technical: ["Motor técnico", "Matriz de 50 puntos con puntajes históricos y cálculo de Consorcio X."], hr: ["Recursos humanos", "Motor de 6 puntos para plantilla, experiencia, preparación académica y software."], experience: ["Experiencia / OEM", "Contratos, especialidad, operación y referencias nacionales/internacionales del fabricante."], economic: ["Capacidad financiera", "Capital de trabajo, liquidez, apalancamiento y subrubros de capacidad."], price: ["Precio / ranking", "Cálculo económico de 50 puntos para propuestas técnicamente solventes."], documents: ["Expediente / evidencias", "Checklist de documentación y responsables internos."], scenarios: ["Escenarios", "Sensibilidad técnica y económica para la toma de decisiones."], rules: ["Mecánica de evaluación", "Mapa de distribución interactivo de los puntos de la licitación y reglas de cálculo del algoritmo."], audit: ["Control Center", "Auditoría ejecutiva de cumplimiento normativo y matriz de evidencias."] };
+
+$$(".nav").forEach(b => b.onclick = () => { $$(".nav").forEach(n => n.classList.remove("active")); b.classList.add("active"); $$(".view").forEach(v => v.classList.remove("active")); const t = $("#view-" + b.dataset.view); if (t) t.classList.add("active"); $("#viewTitle").textContent = titles[b.dataset.view][0]; $("#viewSub").textContent = titles[b.dataset.view][1] });
 $("#techSearch").oninput = renderTechnical; $("#maxXBtn").onclick = () => { criteria.forEach(c => setManualScore(c.id, "x", c.max)); persist(); renderAll() }; $("#clearXBtn").onclick = () => { criteria.forEach(c => setManualScore(c.id, "x", 0)); persist(); renderAll() };
 $("#addContractBtn").onclick = () => { state.contracts.push({ name: "", date: "", rsu: false, electrical: false, steel: false, industrial: false, operate: false, urban: false }); persist(); renderAll() };
 $("#allDocsBtn").onclick = () => { const k = window.cockpitTarget || "x"; criteria.forEach(c => { state.docs[c.id].done = true; state.audit[c.id][k] = M1Audit.updateAuditRecord(state.audit[c.id][k], { status: M1Audit.AUDIT_STATUSES.VALIDATED, evidence: state.audit[c.id][k].evidence || c.at, origin: state.audit[c.id][k].origin || c.at, responsible: state.audit[c.id][k].responsible || "Pendiente de asignar" }) }); persist(); renderAll() };
