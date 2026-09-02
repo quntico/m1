@@ -61,7 +61,7 @@ app.get('/api/health', (req, res) => {
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { message, contextId, contextType } = req.body;
+        const { message, contextId, contextType, clientApiKey } = req.body;
 
         // Log user message
         const currentHist = JSON.parse(fs.readFileSync(historyFile, 'utf-8'));
@@ -76,7 +76,7 @@ app.post('/api/chat', async (req, res) => {
         };
         currentHist.push(userMsg);
 
-        const response = await BidArchitectService.handleChat(message, { contextId, contextType });
+        const response = await BidArchitectService.handleChat(message, { contextId, contextType, clientApiKey });
 
         const aiMsg = {
             id: (Date.now() + 1).toString(),
@@ -111,7 +111,8 @@ app.get('/api/chat/history', (req, res) => {
 app.post('/api/documents', upload.single('file'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: "No file provided" });
-        const analysis = await BidArchitectService.analyzeDocument(req.file.path, req.file.originalname);
+        const { clientApiKey } = req.body;
+        const analysis = await BidArchitectService.analyzeDocument(req.file.path, req.file.originalname, clientApiKey);
         res.json({ success: true, file: req.file.filename, analysis });
     } catch (err) {
         console.error("Upload error", err);

@@ -3,18 +3,18 @@ const { BID_ARCHITECT_SYSTEM_PROMPT } = require('./BidArchitectPrompt');
 const DocumentAnalyzer = require('./DocumentAnalyzer');
 
 class BidArchitectService {
-    async handleChat(message, { contextId, contextType }) {
+    async handleChat(message, { contextId, contextType, clientApiKey }) {
         let contextualPrompt = BID_ARCHITECT_SYSTEM_PROMPT;
 
         if (contextType === "criterion") {
             contextualPrompt += `\nESTÁS ANALIZANDO EL CRITERIO OFICIAL CON ID: ${contextId}`;
         }
 
-        const reply = await AIConnector.generateText(contextualPrompt, message);
+        const reply = await AIConnector.generateText(contextualPrompt, message, clientApiKey);
         return reply;
     }
 
-    async analyzeDocument(filePath, originalName) {
+    async analyzeDocument(filePath, originalName, clientApiKey) {
         // FASE 1: Extract basic info, classify and suggest folder.
         // Usually we'd extract text from PDF using pdf-parse here.
         // Since we are mocking the extraction for Phase 1 if pdf parsing is heavy, we'll read text if txt, or simulate.
@@ -28,9 +28,10 @@ class BidArchitectService {
 
 Luego proporciona tu desglose estándar (CONCLUSIÓN, FUENTE, etc).`;
 
-        const analysis = await AIConnector.analyzeDocumentText(BID_ARCHITECT_SYSTEM_PROMPT, extractedText, analysisPrompt);
+        const analysis = await AIConnector.analyzeDocumentText(BID_ARCHITECT_SYSTEM_PROMPT, extractedText, analysisPrompt, clientApiKey);
         return analysis;
     }
 }
 
 module.exports = { BidArchitectService: new BidArchitectService() };
+
