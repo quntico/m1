@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0 - 2026-09-01
+
+- Se agregó `src/ui/adapters/auditViewAdapter.js` como adaptador mediador (MVVM pattern).
+- Se agregó `src/ui/auditControlCenter.js` generando el Audit Control Center nativo oscuro.
+- Se agregaron KPIs de solvencia, matriz de trazabilidad y Drawer analítico.
+- Se agregó filtrado y búsqueda real-time de los críterios evaluados.
+
 ## 1.2.0 - 2026-09-01
 
 - Se agregó `src/business/auditTrail.js` para resolver puntajes según trazabilidad.
