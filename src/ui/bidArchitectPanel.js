@@ -73,7 +73,7 @@
                     const res = await fetch("http://localhost:3001/api/chat", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ message: val })
+                        body: JSON.stringify({ message: val, clientApiKey: localStorage.getItem('m1_api_key') })
                     });
                     const data = await res.json();
                     appendMessage(data.reply || "Error en la respuesta del agente.", false);
@@ -92,6 +92,7 @@
 
                 const formData = new FormData();
                 formData.append("file", file);
+                formData.append("clientApiKey", localStorage.getItem('m1_api_key') || "");
 
                 try {
                     const res = await fetch("http://localhost:3001/api/documents", {

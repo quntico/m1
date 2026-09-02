@@ -59,53 +59,78 @@
           <p id="viewSub">Evaluación, brechas, riesgos y cálculo de puntos totales para la licitación.</p>
         </div>
         <div class="actions"
-          style="display:flex; gap:8px; align-items:center; background: rgba(255,255,255,0.6); padding: 6px; border-radius: 100px; border: 1px solid var(--line-strong); backdrop-filter: blur(12px); box-shadow: 0 8px 32px rgba(0,0,0,0.04);">
+          style="display:flex; gap:16px; align-items:center; background:#fff; padding:8px; border-radius:100px; border:1px solid var(--line-strong); box-shadow:0 4px 20px rgba(0,0,0,0.03);">
 
           <button id="bidArchitectOpenBtn" class="action-btn"
-            style="background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); color: #fff; border: none; border-radius: 100px; padding: 10px 20px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);"
+            style="background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); color: #fff; border: none; border-radius: 100px; padding: 12px 24px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); font-size:11px;"
             title="BID ARCHITECT AI">
             <i class="ph-fill ph-brain" style="font-size: 16px; margin-right: 6px;"></i> BID ARCHITECT
           </button>
 
-          <div style="width: 1px; height: 24px; background: var(--line-strong); margin: 0 4px;"></div>
+          <div style="display:flex; gap:4px; align-items:center">
+            <label class="action-btn" title="Importar JSON"
+              style="background:transparent; border:none; color:var(--text-dark); padding:10px 16px; font-size:11px; cursor:pointer;">
+              <i class="ph-bold ph-upload-simple"></i> IMPORTAR
+              <input id="jsonInput" type="file" accept=".json" hidden>
+            </label>
 
-          <label class="action-btn outline futuristic-btn" title="Importar JSON">
-            <i class="ph-bold ph-upload-simple"></i> IMPORTAR
-            <input id="jsonInput" type="file" accept=".json" hidden>
-          </label>
+            <button class="action-btn" id="jsonBtn" title="Exportar JSON"
+              style="background:transparent; border:none; color:var(--text-dark); padding:10px 16px; font-size:11px;">
+              <i class="ph-bold ph-download-simple"></i> EXPORTAR JSON
+            </button>
 
-          <button class="action-btn outline futuristic-btn" id="jsonBtn" title="Exportar JSON">
-            <i class="ph-bold ph-download-simple"></i> EXPORTAR JSON
-          </button>
+            <button class="action-btn" id="loadBtn" title="Abrir escenario guardado"
+              style="background:transparent; border:none; color:var(--text-dark); padding:10px 16px; font-size:11px;">
+              <i class="ph-bold ph-folder-open"></i> ABRIR
+            </button>
 
-          <button class="action-btn outline futuristic-btn" id="loadBtn" title="Abrir escenario guardado">
-            <i class="ph-bold ph-folder-open"></i> ABRIR
-          </button>
-
-          <button class="action-btn outline futuristic-btn" id="saveBtn" title="Guardar estado actual">
-            <i class="ph-bold ph-floppy-disk"></i> GUARDAR
-          </button>
-
-          <button class="action-btn outline futuristic-btn" id="resetBtn" title="Restaurar parámetros originales"
-            style="color: #EF4444;">
-            <i class="ph-bold ph-arrow-counter-clockwise"></i> RESTAURAR
-          </button>
-
-          <div style="width: 1px; height: 24px; background: var(--line-strong); margin: 0 4px;"></div>
+            <button class="action-btn" id="saveBtn" title="Guardar estado actual"
+              style="background:transparent; border:none; color:var(--text-dark); padding:10px 16px; font-size:11px;">
+              <i class="ph-bold ph-floppy-disk"></i> GUARDAR
+            </button>
+            <div style="width:1px; height:24px; background:var(--line); margin:0 8px;"></div>
+            <button class="action-btn" id="resetBtn" title="Restaurar parámetros originales"
+              style="background:transparent; border:none; color:#EF4444; padding:10px 16px; font-size:11px;">
+              <i class="ph-bold ph-arrow-counter-clockwise"></i> RESTAURAR
+            </button>
+          </div>
 
           <button class="action-btn primary" id="pdfBtn"
-            style="border-radius: 100px; padding: 10px 20px; background: var(--dark-panel); border-color: var(--dark-panel);">
+            style="border-radius: 100px; padding: 12px 24px; background: #0F172A; border: none; color: #fff; font-size:11px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);">
             <i class="ph-bold ph-file-pdf" style="font-size: 16px; margin-right: 6px;"></i> PDF EJECUTIVO
           </button>
 
-          <button id="adminBtn" class="action-btn outline"
-            style="border-radius: 100px; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border-color: transparent;"
+          <button id="adminBtn" class="action-btn"
+            style="border-radius: 100px; width: 44px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid var(--line-strong);"
             title="Administración CLOUD">
             <i class="ph-bold ph-gear-six" style="font-size: 20px; color: var(--text-dark);"></i>
           </button>
-
         </div>
       </header>
+
+      <!-- ADMIN MODAL -->
+      <div id="adminModal" class="modalbg">
+        <div class="modal panel" style="width: 480px; max-width: 90vw;">
+          <div class="ph">
+            <div>
+              <span class="eyebrow">CONFIGURACIÓN</span>
+              <h2>Administración Cloud</h2>
+            </div>
+          </div>
+          <div class="formgrid" style="display:block">
+            <div class="field">
+              <label>API Key de OpenAI (Módulo Bid Architect)</label>
+              <input id="apiCloudKey" type="password" placeholder="sk-..." />
+              <div class="desc" style="margin-top:8px">Guarda tu key temporalmente para habilitar la inferencia real de
+                los documentos analizados.</div>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:32px">
+            <button id="closeAdminBtn" class="warn">Cerrar</button>
+            <button id="saveAdminBtn" class="primary">Guardar Cambios</button>
+          </div>
+        </div>
+      </div>
 
       <section class="view active" id="view-cockpit">
         <div id="hero"></div>

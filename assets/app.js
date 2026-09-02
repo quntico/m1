@@ -379,3 +379,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 const toggleBtn = document.getElementById('toggleMenuBtn'); if (toggleBtn) { toggleBtn.onclick = () => { document.querySelector('.shell').classList.toggle('collapsed'); toggleBtn.querySelector('i').className = document.querySelector('.shell').classList.contains('collapsed') ? 'ph-bold ph-caret-right' : 'ph-bold ph-caret-left'; }; }
+
+$('#adminBtn').onclick = () => document.getElementById('adminModal').classList.add('open');
+$('#closeAdminBtn').onclick = () => document.getElementById('adminModal').classList.remove('open');
+$('#saveAdminBtn').onclick = () => { localStorage.setItem('m1_api_key', document.getElementById('apiCloudKey').value); document.getElementById('adminModal').classList.remove('open'); };
