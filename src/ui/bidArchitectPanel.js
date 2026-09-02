@@ -19,15 +19,10 @@
                   </div>
                   <button id="closeBidArchitectBtn" style="background:rgba(255,255,255,0.1); border:none; color:#F8FAFC; width:32px; height:32px; border-radius:100px; display:flex; justify-content:center; align-items:center; font-size:18px; cursor:pointer; transition:all 0.2s">✕</button>
               </div>
-              <div style="padding:16px 24px; border-bottom:1px solid rgba(255,255,255,0.08); background:rgba(0,0,0,0.2)">
-                  <div style="font-size:10px; font-weight:800; color:rgba(255,255,255,0.5); margin-bottom:12px; letter-spacing:0.5px">ACCIONES RÁPIDAS (SOPORTA PDF, WORD, CAD, ZIP)</div>
-                  <div style="display:flex; gap:8px; flex-wrap:wrap">
-                      <label style="background:linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); color:#FFF; padding:8px 14px; border-radius:100px; font-size:11px; cursor:pointer; font-weight:800; box-shadow:0 4px 12px rgba(59,130,246,0.3); border:1px solid rgba(255,255,255,0.1)">
-                          📥 Subir Documento
-                          <input type="file" id="bidUploadDoc" accept="*/*" style="display:none">
-                      </label>
-                      <button class="bid-action-btn" data-action="estrategia" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#E2E8F0; padding:8px 14px; border-radius:100px; font-size:11px; cursor:pointer; font-weight:800; transition:all 0.2s">📊 Analizar Estrategia</button>
-                      <button class="bid-action-btn" data-action="riesgos" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#E2E8F0; padding:8px 14px; border-radius:100px; font-size:11px; cursor:pointer; font-weight:800; transition:all 0.2s">⚠️ Ver Riesgos</button>
+              <div style="padding:12px 24px; border-bottom:1px solid rgba(255,255,255,0.08); background:rgba(0,0,0,0.2); display:flex; justify-content:space-between; align-items:center;">
+                  <div style="font-size:11px; font-weight:900; color:#E2E8F0; letter-spacing:0.5px">BID</div>
+                  <div id="aiConnectionStatus" style="display:flex; align-items:center; gap:8px; font-size:10px; font-weight:800; color:rgba(255,255,255,0.5)">
+                     <div style="width:8px; height:8px; border-radius:10px; background:#EF4444; box-shadow:0 0 8px #EF4444"></div> OFFLINE
                   </div>
               </div>
               <div id="bidChatWindow" style="flex:1; padding:24px; overflow-y:auto; display:flex; flex-direction:column; gap:20px;">
@@ -37,8 +32,12 @@
               </div>
               <div style="padding:20px 24px; border-top:1px solid rgba(255,255,255,0.08); background:rgba(0,0,0,0.2)">
                   <div style="display:flex; gap:10px">
+                      <label style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#94A3B8; width:46px; height:46px; flex-shrink:0; border-radius:100px; cursor:pointer; display:flex; justify-content:center; align-items:center; font-size:18px; transition:0.2s">
+                          <input type="file" id="bidUploadDoc" accept="*/*" style="display:none">
+                          📎
+                      </label>
                       <input type="text" id="bidTextInput" placeholder="Ej. ¿Qué me falta para cumplir el Anexo Técnico 7?" style="flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#F8FAFC; padding:14px 16px; border-radius:100px; outline:none; font-size:13px; backdrop-filter:blur(4px)">
-                      <button id="bidSendBtn" style="background:#3B82F6; color:#FFF; border:none; width:46px; height:46px; border-radius:100px; cursor:pointer; font-weight:800; display:flex; justify-content:center; align-items:center; font-size:18px; box-shadow:0 4px 12px rgba(59,130,246,0.3)">↑</button>
+                      <button id="bidSendBtn" style="background:#3B82F6; color:#FFF; border:none; width:46px; height:46px; flex-shrink:0; border-radius:100px; cursor:pointer; font-weight:800; display:flex; justify-content:center; align-items:center; font-size:18px; box-shadow:0 4px 12px rgba(59,130,246,0.3)">↑</button>
                   </div>
               </div>
           `;
@@ -51,6 +50,21 @@
             const textInput = document.getElementById("bidTextInput");
             const sendBtn = document.getElementById("bidSendBtn");
             const fileInput = document.getElementById("bidUploadDoc");
+            const statusEl = document.getElementById("aiConnectionStatus");
+
+            const updateLED = () => {
+                const k = localStorage.getItem('m1_api_key') || "";
+                if (k.startsWith("sk-")) {
+                    statusEl.innerHTML = `<div style="width:8px; height:8px; border-radius:10px; background:#10B981; box-shadow:0 0 8px #10B981"></div> ONLINE`;
+                    statusEl.style.color = "#10B981";
+                } else {
+                    statusEl.innerHTML = `<div style="width:8px; height:8px; border-radius:10px; background:#EF4444; box-shadow:0 0 8px #EF4444"></div> OFFLINE`;
+                    statusEl.style.color = "#EF4444";
+                }
+            };
+            // check every time we click or focus since user might update it in the admin modal
+            updateLED();
+            panel.onclick = updateLED;
 
             const appendMessage = (text, isUser) => {
                 const chat = document.getElementById("bidChatWindow");
