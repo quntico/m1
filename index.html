@@ -45,6 +45,13 @@
           <button class="nav" data-view="documents">7. Expediente / evidencias</button>
           <button class="nav" data-view="scenarios">8. Escenarios</button>
           <button class="nav" data-view="rules">9. Mecánica de evaluación</button>
+
+          <div class="nav-group-title">Gestión Empresarial</div>
+          <button class="nav" data-view="zafiro" style="display:flex; align-items:center; gap:8px">
+            <span
+              style="background:linear-gradient(135deg,#3B82F6,#8B5CF6); color:#fff; font-size:9px; font-weight:900; padding:2px 6px; border-radius:4px; letter-spacing:0.5px">Z</span>
+            Portafolio ZAFIRO
+          </button>
         </nav>
 
         <div class="foot">M1 · CONAGUA<br>LO-16-B00-016B00985-N-31-2026</div>
@@ -598,12 +605,214 @@
       </div>
     </div>
   </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ZAFIRO — PORTAFOLIO DE LICITACIONES
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="view" id="view-zafiro" style="padding:0; background:var(--bg-main)">
+    <!-- Header de bienvenida -->
+    <div
+      style="padding:32px 40px 24px; background:#fff; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center">
+      <div>
+        <div style="font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:4px">Buenos días, Usuario
+        </div>
+        <h1 style="margin:0; font-size:26px; font-weight:900; color:var(--text-dark)">Resumen de licitaciones</h1>
+      </div>
+      <button onclick="openZafiroForm()"
+        style="background:var(--accent); color:#fff; border:none; padding:12px 24px; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:8px; box-shadow:0 4px 12px rgba(16,185,129,0.25)">
+        <i class="ph-bold ph-plus" style="font-size:16px"></i> Nueva licitación
+      </button>
+    </div>
+
+    <!-- KPI Cards -->
+    <div
+      style="display:grid; grid-template-columns:repeat(6,1fr); gap:1px; background:var(--line); border-bottom:1px solid var(--line)">
+      <div style="background:#fff; padding:24px 20px">
+        <div style="font-size:22px; margin-bottom:4px; color:#60A5FA">↗</div>
+        <div style="font-size:26px; font-weight:900; color:var(--text-dark)" id="z-kpi-active">0</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Licitaciones activas</div>
+      </div>
+      <div style="background:#fff; padding:24px 20px">
+        <div style="font-size:22px; margin-bottom:4px; color:#34D399">$</div>
+        <div style="font-size:26px; font-weight:900; color:var(--text-dark)" id="z-kpi-value">$0 MDP</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Valor potencial</div>
+      </div>
+      <div style="background:#fff; padding:24px 20px">
+        <div style="font-size:22px; margin-bottom:4px; color:#A78BFA">◎</div>
+        <div style="font-size:26px; font-weight:900; color:var(--text-dark)" id="z-kpi-prob">0%</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Probabilidad promedio</div>
+      </div>
+      <div style="background:#fff; padding:24px 20px">
+        <div style="font-size:22px; margin-bottom:4px; color:#FCD34D">⌛</div>
+        <div style="font-size:26px; font-weight:900; color:var(--text-dark)" id="z-kpi-week">0</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Cierran esta semana</div>
+      </div>
+      <div style="background:#fff; padding:24px 20px">
+        <div style="font-size:22px; margin-bottom:4px; color:#F87171">📄</div>
+        <div style="font-size:26px; font-weight:900; color:var(--text-dark)" id="z-kpi-docs">0</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Documentos pendientes</div>
+      </div>
+      <div style="background:#fff; padding:24px 20px">
+        <div style="font-size:22px; margin-bottom:4px; color:#EF4444">⚠️</div>
+        <div style="font-size:26px; font-weight:900; color:var(--text-dark)" id="z-kpi-risks">0</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Riesgos críticos</div>
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div style="background:#fff; border-bottom:1px solid var(--line); padding:0 40px; display:flex; gap:4px">
+      <button onclick="zFilter('Todas')" class="z-filter-btn active" data-zf="Todas"
+        style="padding:16px 20px; border:none; background:transparent; font-weight:800; font-size:13px; cursor:pointer; border-bottom:3px solid var(--accent); color:var(--accent)">Todas</button>
+      <button onclick="zFilter('Activa')" class="z-filter-btn" data-zf="Activa"
+        style="padding:16px 20px; border:none; background:transparent; font-weight:600; font-size:13px; cursor:pointer; border-bottom:3px solid transparent; color:var(--text-muted)">Activas</button>
+      <button onclick="zFilter('Preparación')" class="z-filter-btn" data-zf="Preparación"
+        style="padding:16px 20px; border:none; background:transparent; font-weight:600; font-size:13px; cursor:pointer; border-bottom:3px solid transparent; color:var(--text-muted)">En
+        preparación</button>
+      <button onclick="zFilter('Presentada')" class="z-filter-btn" data-zf="Presentada"
+        style="padding:16px 20px; border:none; background:transparent; font-weight:600; font-size:13px; cursor:pointer; border-bottom:3px solid transparent; color:var(--text-muted)">Presentadas</button>
+      <button onclick="zFilter('En evaluación')" class="z-filter-btn" data-zf="En evaluación"
+        style="padding:16px 20px; border:none; background:transparent; font-weight:600; font-size:13px; cursor:pointer; border-bottom:3px solid transparent; color:var(--text-muted)">En
+        evaluación</button>
+      <button onclick="zFilter('Ganada')" class="z-filter-btn" data-zf="Ganada"
+        style="padding:16px 20px; border:none; background:transparent; font-weight:600; font-size:13px; cursor:pointer; border-bottom:3px solid transparent; color:var(--text-muted)">Ganadas</button>
+      <button onclick="zFilter('Perdida')" class="z-filter-btn" data-zf="Perdida"
+        style="padding:16px 20px; border:none; background:transparent; font-weight:600; font-size:13px; cursor:pointer; border-bottom:3px solid transparent; color:var(--text-muted)">Perdidas</button>
+    </div>
+
+    <!-- Portfolio Table -->
+    <div style="padding:24px 40px">
+      <div style="background:#fff; border-radius:16px; border:1px solid var(--line); overflow:hidden">
+        <div
+          style="padding:20px 24px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center">
+          <div style="font-weight:800; font-size:15px; color:var(--text-dark)">Portafolio de licitaciones</div>
+          <div style="display:flex; gap:8px">
+            <input type="search" id="zSearch" placeholder="Buscar licitación..." oninput="renderZafiro()"
+              style="padding:8px 16px; border-radius:100px; border:1px solid var(--line-strong); font-size:12px; outline:none; width:200px">
+          </div>
+        </div>
+        <table style="width:100%; border-collapse:collapse">
+          <thead>
+            <tr style="background:var(--bg-main)">
+              <th
+                style="padding:14px 24px; text-align:left; font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px">
+                Licitación</th>
+              <th
+                style="padding:14px 16px; text-align:left; font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px">
+                Dependencia</th>
+              <th
+                style="padding:14px 16px; text-align:left; font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px">
+                Estado</th>
+              <th
+                style="padding:14px 16px; text-align:left; font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px">
+                Monto</th>
+              <th
+                style="padding:14px 16px; text-align:left; font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px">
+                Puntaje</th>
+              <th
+                style="padding:14px 16px; text-align:left; font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px">
+                Prob.</th>
+              <th
+                style="padding:14px 16px; text-align:left; font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px">
+                Fecha Límite</th>
+              <th
+                style="padding:14px 16px; text-align:left; font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px">
+                Responsable</th>
+              <th
+                style="padding:14px 16px; text-align:center; font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px">
+                Alertas</th>
+            </tr>
+          </thead>
+          <tbody id="z-portfolio-table"></tbody>
+        </table>
+
+        <!-- Empty state -->
+        <div id="z-empty" style="display:none; padding:60px; text-align:center; color:var(--text-muted)">
+          <div style="font-size:48px; margin-bottom:16px">📋</div>
+          <div style="font-weight:800; font-size:16px; margin-bottom:8px; color:var(--text-dark)">Sin licitaciones</div>
+          <div style="font-size:13px">Haz clic en <b>+ Nueva licitación</b> para comenzar tu portafolio.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ZAFIRO: Nueva Licitación Modal -->
+  <div id="zafiroModal"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:9000; align-items:center; justify-content:center; backdrop-filter:blur(4px)">
+    <div
+      style="background:#fff; border-radius:20px; width:560px; max-width:95vw; max-height:90vh; overflow-y:auto; box-shadow:0 25px 60px rgba(0,0,0,0.2)">
+      <div
+        style="padding:28px 32px 20px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center">
+        <div>
+          <span class="eyebrow">ZAFIRO</span>
+          <h2 style="margin:4px 0 0 0; font-size:18px">Nueva Licitación</h2>
+        </div>
+        <button onclick="document.getElementById('zafiroModal').style.display='none'"
+          style="background:var(--bg-main); border:1px solid var(--line-strong); width:36px; height:36px; border-radius:100px; cursor:pointer; font-size:18px">✕</button>
+      </div>
+      <div style="padding:28px 32px">
+        <div class="formgrid">
+          <div class="field">
+            <label>Nombre de la Licitación *</label>
+            <input id="z-name" type="text" placeholder="Ej: MIRAMAR M1 - Planta RSU">
+          </div>
+          <div class="field">
+            <label>Dependencia / Cliente *</label>
+            <input id="z-dep" type="text" placeholder="Ej: CONAGUA, SEDENA...">
+          </div>
+          <div class="field">
+            <label>Descripción breve</label>
+            <input id="z-desc" type="text" placeholder="Ej: Planta de valorización RSU 600 TPD">
+          </div>
+          <div class="field">
+            <label>Monto estimado (MDP)</label>
+            <input id="z-amount" type="number" min="0" step="0.1" placeholder="420">
+          </div>
+          <div class="field">
+            <label>Estado</label>
+            <select id="z-status">
+              <option value="Preparación">En preparación</option>
+              <option value="Activa">Activa</option>
+              <option value="Presentada">Presentada</option>
+              <option value="En evaluación">En evaluación</option>
+              <option value="Ganada">Ganada</option>
+              <option value="Perdida">Perdida</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Fecha límite</label>
+            <input id="z-date" type="date">
+          </div>
+          <div class="field">
+            <label>Responsable</label>
+            <input id="z-owner" type="text" placeholder="Nombre del responsable">
+          </div>
+          <div class="field">
+            <label>Probabilidad de éxito (%)</label>
+            <input id="z-prob" type="number" min="0" max="100" step="1" placeholder="75">
+          </div>
+          <div class="field">
+            <label>Número de licitación (oficial)</label>
+            <input id="z-num" type="text" placeholder="Ej: LO-16-B00-016B00985-N-31-2026">
+          </div>
+          <div class="field">
+            <label>Riesgos críticos (#)</label>
+            <input id="z-risks" type="number" min="0" step="1" placeholder="0">
+          </div>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:24px; justify-content:flex-end">
+          <button onclick="document.getElementById('zafiroModal').style.display='none'" class="warn">Cancelar</button>
+          <button onclick="saveZafiroLicitacion()" class="primary">💾 Guardar Licitación</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <script src="src/calculations/m1Calculations.js"></script>
   <script src="src/business/auditTrail.js"></script>
   <script src="src/ui/adapters/auditViewAdapter.js"></script>
   <script src="src/ui/auditControlCenter.js"></script>
   <script src="src/ui/bidArchitectPanel.js"></script>
   <script src="assets/app.js"></script>
+  <script src="assets/zafiro.js"></script>
   <script>
     document.getElementById("bidArchitectOpenBtn").onclick = () => {
       window.openBidArchitectInfo();
