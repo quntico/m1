@@ -110,8 +110,8 @@ textarea {
 
 /* SIDEBAR */
 .side {
-    background: rgba(30, 41, 59, 0.65);
-    /* Gris/azul oscuro con ~35% de transparencia visual */
+    background: rgba(34, 36, 44, 0.65);
+    /* Color de la muestra (Gris asfalto) con transparencia */
     backdrop-filter: blur(16px) saturate(140%);
     -webkit-backdrop-filter: blur(16px) saturate(140%);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -136,6 +136,11 @@ textarea {
     flex-direction: column;
 }
 
+.side-content::-webkit-scrollbar {
+    width: 0px;
+    display: none;
+}
+
 .shell.collapsed .side-content {
     opacity: 0;
     pointer-events: none;
@@ -145,8 +150,8 @@ textarea {
 .menu-toggle {
     position: absolute;
     top: 24px;
-    right: -40px;
-    background: rgba(30, 41, 59, 0.85);
+    right: -32px;
+    background: rgba(34, 36, 44, 0.85);
     backdrop-filter: blur(10px);
     color: rgba(255, 255, 255, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -162,8 +167,8 @@ textarea {
 }
 
 .menu-toggle:hover {
-    color: #fff;
-    background: rgba(40, 50, 70, 0.9);
+    color: #3B82F6;
+    background: rgba(34, 36, 44, 0.95);
 }
 
 /* LOGO */
@@ -175,8 +180,8 @@ textarea {
 }
 
 .logo .mark {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    border: none;
     color: #fff;
     font-weight: 900;
     width: 40px;
@@ -186,6 +191,7 @@ textarea {
     justify-content: center;
     border-radius: 10px;
     font-size: 18px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .logo div:last-child b {

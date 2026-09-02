@@ -360,3 +360,5 @@ document.addEventListener("keydown", (e) => {
     $$(".modalbg, .modal").forEach(m => m.classList.remove("open"));
   }
 });
+
+const toggleBtn = document.getElementById('toggleMenuBtn'); if (toggleBtn) { toggleBtn.onclick = () => { document.querySelector('.shell').classList.toggle('collapsed'); toggleBtn.querySelector('i').className = document.querySelector('.shell').classList.contains('collapsed') ? 'ph-bold ph-caret-right' : 'ph-bold ph-caret-left'; }; }
