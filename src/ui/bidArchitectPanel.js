@@ -105,6 +105,17 @@
                 }
             };
 
+            const loadHistory = async () => {
+                try {
+                    const res = await fetch("http://localhost:3001/api/chat/history");
+                    const hist = await res.json();
+                    if (hist && hist.length > 0) {
+                        document.getElementById("bidChatWindow").innerHTML = "";
+                        hist.forEach(msg => appendMessage(msg.content, msg.role === 'user'));
+                    }
+                } catch (e) { }
+            };
+            loadHistory();
         }
         panel.style.display = "flex";
     }

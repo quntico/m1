@@ -71,3 +71,16 @@ Cada cálculo devuelve fórmula, entradas, resultado, unidades, fuente/regla, co
 El sistema distingue `SIMULACION` de `AUDITORIA`.
 
 En `AUDITORIA`, un puntaje sólo cuenta si tiene evidencia, origen, responsable, fecha y estado `VALIDADO`. Los overrides manuales conservan el score automático y exigen motivo.
+
+## EJECUCIÓN LOCAL
+
+1. Instalar Node.js
+2. Ejecutar npm install
+3. Copiar .env.example a .env
+4. Colocar OPENAI_API_KEY en .env
+5. Ejecutar npm run dev
+6. Abrir en el navegador: http://localhost:3000
+
+## DATOS Y PERSISTENCIA
+
+Todos los documentos analizados y la memoria de historial de Bid Architect se guardan físicamente y pueden inspeccionarse en la ruta: \data/projects/M1/\.
