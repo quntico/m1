@@ -377,16 +377,22 @@ document.addEventListener("keydown", (e) => {
 const toggleBtn = document.getElementById('toggleMenuBtn'); if (toggleBtn) { toggleBtn.onclick = () => { document.querySelector('.shell').classList.toggle('collapsed'); toggleBtn.querySelector('i').className = document.querySelector('.shell').classList.contains('collapsed') ? 'ph-bold ph-caret-right' : 'ph-bold ph-caret-left'; }; }
 
 // ─── ADMIN MODAL ────────────────────────────────────────────────
-function showAdminTab(tabId) {
-  document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
-  document.getElementById(tabId).style.display = 'block';
+window.showAdminTab = function (id) {
+  document.querySelectorAll('.admin-tab-content').forEach(c => c.style.display = 'none');
   document.querySelectorAll('.admin-tab').forEach(b => {
-    b.style.color = 'var(--text-muted)';
-    b.style.borderBottom = '2px solid transparent';
+    b.classList.remove('active');
+    b.style.color = '#64748B';
+    b.style.borderBottom = '3px solid transparent';
   });
-  const active = document.getElementById('atab-' + tabId.replace('tab-', ''));
-  if (active) { active.style.color = 'var(--accent)'; active.style.borderBottom = '2px solid var(--accent)'; }
-}
+  const cont = document.getElementById(id);
+  if (cont) cont.style.display = 'block';
+  const tb = document.getElementById('atab-' + id.split('-')[1]);
+  if (tb) {
+    tb.classList.add('active');
+    tb.style.color = '#3B82F6';
+    tb.style.borderBottom = '3px solid #3B82F6';
+  }
+};
 
 async function saveApiKey() {
   const key = document.getElementById('apiCloudKey').value.trim();
