@@ -113,7 +113,6 @@ textarea {
 /* SIDEBAR */
 .side {
     background: rgba(34, 36, 44, 0.65);
-    /* Color de la muestra (Gris asfalto) con transparencia */
     backdrop-filter: blur(16px) saturate(140%);
     -webkit-backdrop-filter: blur(16px) saturate(140%);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -123,7 +122,7 @@ textarea {
     top: 0;
     height: 100vh;
     white-space: nowrap;
-    z-index: 10;
+    z-index: 100;
     box-shadow: 2px 0 16px rgba(0, 0, 0, 0.05);
 }
 
@@ -136,11 +135,15 @@ textarea {
     height: 100%;
     display: flex;
     flex-direction: column;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .side-content::-webkit-scrollbar {
-    width: 0px;
-    display: none;
+    width: 0px !important;
+    height: 0px !important;
+    display: none !important;
+    background: transparent;
 }
 
 .shell.collapsed .side-content {
