@@ -124,6 +124,7 @@ textarea {
     white-space: nowrap;
     z-index: 100;
     box-shadow: 2px 0 16px rgba(0, 0, 0, 0.05);
+    min-width: 0;
 }
 
 .side-content {
@@ -149,6 +150,10 @@ textarea {
 .shell.collapsed .side-content {
     opacity: 0;
     pointer-events: none;
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+    padding: 0;
 }
 
 /* MENU TOGGLE */

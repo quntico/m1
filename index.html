@@ -18,7 +18,8 @@
 <body>
   <div class="shell">
     <aside class="side">
-      <button class="menu-toggle" id="toggleMenuBtn" title="Minimizar Menú">
+      <button class="menu-toggle" id="toggleMenuBtn" title="Minimizar Menú"
+        onclick="document.querySelector('.shell').classList.toggle('collapsed'); var i = this.querySelector('i'); i.className = document.querySelector('.shell').classList.contains('collapsed') ? 'ph-bold ph-caret-right' : 'ph-bold ph-caret-left';">
         <i class="ph-bold ph-caret-left" style="font-size: 16px;"></i>
       </button>
 
