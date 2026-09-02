@@ -108,9 +108,26 @@ function scoreCell(c, k) {
 }
 function scoreCellTD(c, k) { const a = state.audit[c.id]?.[k]; return `<td>${scoreCell(c, k)}<div class="desc" style="margin-top:6px">${(k === "x" && c.auto) && !a?.override ? "AUTO" : "editable"} · máx ${fmt(c.max)} · ${a?.status || "PENDIENTE"} · ${a?.risk || "AMARILLO"}</div><input class="note" data-note="${c.id}|${k}" placeholder="Nota / evidencia" value="${esc(state.notes[c.id][k] || "")}"></td>`; }
 function esc(s) { return String(s).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[m])) }
+const techIcon = (t) => {
+  let lower = t.toLowerCase();
+  if (lower.includes("maquinaria")) return `<div style="width:50px;height:50px;border-radius:12px;background:#E0F2FE;color:#0284C7;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0"><i class="ph-bold ph-tractor"></i></div>`;
+  if (lower.includes("mano de obra")) return `<div style="width:50px;height:50px;border-radius:12px;background:#F3E8FF;color:#9333EA;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0"><i class="ph-bold ph-users-three"></i></div>`;
+  return `<div style="width:50px;height:50px;border-radius:12px;background:#DCFCE7;color:#16A34A;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0"><i class="ph-bold ph-clipboard-text"></i></div>`;
+};
+
 function renderTechnical() {
   syncAuto(); const q = ($("#techSearch")?.value || "").toLowerCase();
-  $("#technicalMatrix").innerHTML = groups.map(g => { const list = criteria.filter(c => c.g === g.id && (`${c.t} ${c.at} ${c.d}`).toLowerCase().includes(q)); if (!list.length) return ""; return `<div class="group"><div class="ghd" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><span style="font-weight:900;font-size:16px;color:var(--text-dark)">${g.name}</span><span style="background:var(--accent);color:#fff;padding:6px 12px;border-radius:100px;font-size:12px;font-weight:800">Consorcio X: ${fmt(gscore("x", g.id))} / ${fmt(g.max)} pts</span></div><div class="tablewrap"><table class="criteria"><thead><tr><th>Criterio</th><th>Máx.</th><th>GH</th><th>PROGONZA</th><th>CONSORCIO X</th></tr></thead><tbody>${list.map(c => `<tr><td><div class="title">${c.t}</div><div class="desc">${c.d}</div><div style="margin-top:8px;font-size:11px;background:var(--bg-main);padding:6px 10px;border-radius:6px;display:inline-block;color:var(--text-muted);border:1px solid var(--line-strong)">Documento de Referencia: <b style="color:var(--text-dark)">${c.at}</b></div></td><td><b style="font-size:16px;color:var(--text-dark)">${fmt(c.max)}</b></td>${scoreCellTD(c, "gh")}${scoreCellTD(c, "pro")}${scoreCellTD(c, "x")}</tr>`).join("")}</tbody></table></div><br></div>` }).join("");
+  const scEl = $("#techConsorcioScore");
+  if (scEl) {
+    let total = 0, max = 0;
+    groups.forEach(g => { total += gscore("x", g.id); max += g.max; });
+    scEl.innerHTML = `Consorcio X: ${fmt(total)} / ${fmt(max)} pts <i class="ph-bold ph-check-circle" style="font-size:16px;"></i>`;
+  }
+  $("#technicalMatrix").innerHTML = groups.map(g => {
+    const list = criteria.filter(c => c.g === g.id && (`${c.t} ${c.at} ${c.d}`).toLowerCase().includes(q));
+    if (!list.length) return "";
+    return `<div class="group"><div class="ghd" style="display:flex;align-items:center;gap:12px;padding:24px 0 16px 0"><div style="width:6px;height:24px;background:var(--accent);border-radius:100px;"></div><span style="font-weight:900;font-size:16px;color:var(--text-dark)">${g.name}</span></div><div class="tablewrap"><table class="criteria"><thead><tr><th style="padding-left:24px">Criterio</th><th>Máx.</th><th>GH</th><th>PROGONZA</th><th>CONSORCIO X</th></tr></thead><tbody>${list.map(c => `<tr><td><div style="display:flex;gap:16px">${techIcon(c.t)}<div><div class="title">${c.t}</div><div class="desc">${c.d}</div><div style="margin-top:12px;font-size:11px;background:rgba(59,130,246,0.1);padding:6px 10px;border-radius:6px;display:inline-block;color:var(--text-muted);border:1px solid rgba(59,130,246,0.2)">Documento de Referencia: <b style="color:#2563EB">${c.at}</b></div></div></div></td><td><b style="font-size:16px;color:var(--text-dark);display:block;margin-bottom:2px">${fmt(c.max)}</b><span style="font-size:11px;color:var(--text-muted)">puntos</span></td>${scoreCellTD(c, "gh")}${scoreCellTD(c, "pro")}${scoreCellTD(c, "x")}</tr>`).join("")}</tbody></table></div></div>`
+  }).join("");
 }
 function bindScores() {
   $$("[data-score]").forEach(e => e.onchange = () => { const [id, k] = e.dataset.score.split("|"); setManualScore(id, k, e.value); persist(); renderAll() });

@@ -1,27 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap');
 
 :root {
-    /* Pandora Theme Colors */
-    --accent: #00A6B4;
-    --accent-hover: #008B99;
-    --accent-bg: #E6F7F9;
+    /* M1 Precal Theme Colors */
+    --accent: #10B981;
+    /* Emerald Green */
+    --accent-hover: #059669;
+    --accent-bg: rgba(16, 185, 129, 0.1);
 
-    --bg-main: #F4F7F9;
+    --bg-main: #F8FAFC;
     --bg-panel: #FFFFFF;
 
-    --text-dark: #121D2C;
+    --text-dark: #0F172A;
+    /* Slate 900 */
     --text-muted: #64748B;
     --text-light: #94A3B8;
 
-    --dark-panel: #111C2C;
-    --dark-panel-hover: #16243A;
+    --dark-panel: #0F172A;
+    --dark-panel-hover: #1E293B;
 
     --line: #E2E8F0;
     --line-strong: #CBD5E1;
 
-    --success: #059669;
-    --danger: #DC2626;
-    --warning: #D97706;
+    --success: #10B981;
+    --danger: #EF4444;
+    --warning: #F59E0B;
 
     /* Legacy Mappings */
     --bg-0: var(--bg-main);
@@ -755,7 +757,40 @@ table {
     border-collapse: collapse;
 }
 
-th {
+table.criteria {
+    border-collapse: separate;
+    border-spacing: 0 16px;
+}
+
+table.criteria th {
+    background: transparent;
+    padding: 12px 24px;
+    border-bottom: none;
+    color: var(--text-muted);
+}
+
+table.criteria td {
+    background: var(--bg-panel);
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-style: solid none;
+    vertical-align: top;
+    margin-bottom: 24px;
+}
+
+table.criteria td:first-child {
+    border-left-style: solid;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+table.criteria td:last-child {
+    border-right-style: solid;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+table:not(.criteria) th {
     background: var(--bg-main);
     padding: 16px;
     text-align: left;
@@ -767,14 +802,14 @@ th {
     border-bottom: 2px solid var(--line);
 }
 
-td {
+table:not(.criteria) td {
     padding: 16px;
     border-bottom: 1px solid var(--line);
     color: var(--text-dark);
     vertical-align: top;
 }
 
-tr:hover td {
+table:not(.criteria) tr:hover td {
     background: var(--bg-main);
 }
 

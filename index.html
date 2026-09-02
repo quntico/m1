@@ -154,14 +154,48 @@
 
       <section class="view" id="view-technical">
         <section class="panel">
-          <div class="ph split">
-            <div><span class="eyebrow">50 PUNTOS</span>
-              <h2>Matriz técnica integral</h2>
-              <p>Consorcio X se calcula desde microcriterios. GH y PROGONZA permanecen precargados según fallo, pero
-                pueden editarse.</p>
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px">
+            <div style="display:flex; gap:16px; align-items:center;">
+              <div
+                style="width:56px; height:56px; border-radius:16px; background:var(--accent-bg); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:28px">
+                <i class="ph-bold ph-clipboard-text"></i>
+              </div>
+              <div>
+                <span class="eyebrow" style="margin-bottom:0">50 PUNTOS</span>
+                <h2
+                  style="margin:0; font-size:20px; font-weight:900; color:var(--text-dark); text-transform:uppercase; letter-spacing:0.5px">
+                  Matriz técnica integral</h2>
+              </div>
             </div>
-            <div class="tools"><input id="techSearch" type="search" placeholder="Buscar criterio / AT..."><button
-                id="maxXBtn">Completar X</button><button id="clearXBtn">Limpiar X</button></div>
+            <div style="display:flex; gap:8px">
+              <input id="techSearch" type="search" placeholder="Buscar criterio..."
+                style="width:240px; background:#fff; border:1px solid var(--line-strong); border-radius:100px; padding:10px 16px; font-size:12px; outline:none;">
+              <button
+                style="width:40px; height:40px; border-radius:100px; background:#fff; border:1px solid var(--line-strong); color:var(--text-muted); display:flex; align-items:center; justify-content:center; padding:0"><i
+                  class="ph-bold ph-funnel"></i></button>
+            </div>
+          </div>
+
+          <div
+            style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--line); margin-bottom:24px;">
+            <div style="display:flex; gap:12px">
+              <button class="nav-tab active"
+                style="background:#fff; border:1px solid var(--line-strong); border-bottom:none; padding:12px 24px; border-radius:8px 8px 0 0; color:var(--text-dark); font-weight:800; display:flex; gap:8px; align-items:center; font-size:12px; cursor:default; transform:translateY(2px)">
+                <i class="ph-bold ph-building-office" style="color:var(--text-muted)"></i> GH
+              </button>
+              <button class="nav-tab"
+                style="background:#fff; border:1px solid var(--line-strong); border-bottom:none; padding:12px 24px; border-radius:8px 8px 0 0; color:var(--text-warning); font-weight:800; display:flex; gap:8px; align-items:center; font-size:12px; cursor:default; transform:translateY(2px)">
+                <i class="ph-bold ph-users" style="color:#F59E0B"></i> PROGONZA
+              </button>
+              <button class="nav-tab main"
+                style="background:#fff; border:1px solid var(--accent); border-bottom:2px solid #fff; padding:12px 24px; border-radius:8px 8px 0 0; color:var(--accent); font-weight:800; display:flex; gap:8px; align-items:center; font-size:12px; cursor:default; transform:translateY(2px); box-shadow:0 -4px 12px rgba(16,185,129,0.05)">
+                <i class="ph-bold ph-star"></i> CONSORCIO X
+              </button>
+            </div>
+            <div id="techConsorcioScore"
+              style="background:var(--accent); color:#fff; border-radius:100px; padding:8px 16px; font-weight:800; font-size:13px; display:flex; gap:8px; align-items:center;">
+              Consorcio X: 0.00 / 50.00 pts <i class="ph-bold ph-check-circle"></i>
+            </div>
           </div>
           <div id="technicalMatrix"></div>
         </section>
