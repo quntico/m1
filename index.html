@@ -55,10 +55,13 @@
           <p id="viewSub">Evaluación, brechas, riesgos y cálculo de puntos totales para la licitación.</p>
         </div>
         <div class="actions">
+          <button id="bidArchitectOpenBtn" class="action-btn"
+            style="color:#F8FAFC;background:#3B82F6;border:none;display:flex;align-items:center;justify-content:center;padding:10px 16px;font-weight:800;letter-spacing:0.5px"
+            title="BID ARCHITECT AI">🧠 BID ARCHITECT</button>
           <button id="adminBtn" class="action-btn outline"
             style="color:var(--text-dark);border-color:var(--line-strong);display:flex;align-items:center;justify-content:center;padding:10px"
             title="Administración">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
@@ -402,7 +405,15 @@
   </div>
   <script src="src/calculations/m1Calculations.js"></script>
   <script src="src/business/auditTrail.js"></script>
+  <script src="src/ui/adapters/auditViewAdapter.js"></script>
+  <script src="src/ui/auditControlCenter.js"></script>
+  <script src="src/ui/bidArchitectPanel.js"></script>
   <script src="assets/app.js"></script>
+  <script>
+    document.getElementById("bidArchitectOpenBtn").onclick = () => {
+      window.openBidArchitectInfo();
+    };
+  </script>
 </body>
 
 </html>
