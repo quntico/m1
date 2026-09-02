@@ -99,6 +99,32 @@ app.post('/api/config', (req, res) => {
     }
 });
 
+// Branding Endpoints (persist in server)
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+app.post('/api/branding', (req, res) => {
+    try {
+        const { type, dataUrl } = req.body;
+        if (!type || !dataUrl) return res.status(400).json({ error: 'Missing type or dataUrl' });
+
+        const matches = dataUrl.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
+        if (!matches) return res.status(400).json({ error: 'Invalid data format' });
+
+        const buffer = Buffer.from(matches[2], 'base64');
+        const ext = matches[1].includes('png') ? 'png' : matches[1].includes('svg') ? 'svg' : 'png';
+
+        const filename = (type === 'logo-light' ? 'logo-light' : type === 'logo-dark' ? 'logo-dark' : 'favicon') + `.${ext}`;
+        const filePath = path.join(__dirname, 'assets', filename);
+
+        fs.writeFileSync(filePath, buffer);
+
+        res.json({ ok: true, url: `assets/${filename}?t=${Date.now()}` });
+    } catch (err) {
+        console.error('Branding Save Error:', err);
+        res.status(500).json({ error: 'Failed to save branding asset' });
+    }
+});
+
 app.post('/api/chat', async (req, res) => {
     try {
         const { message, contextId, contextType, clientApiKey } = req.body;

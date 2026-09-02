@@ -460,14 +460,31 @@ if (_savedTheme && themes[_savedTheme]) applyTheme(_savedTheme);
 function uploadLogo(input, mode) {
   const file = input.files[0]; if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = async e => {
     const src = e.target.result;
-    localStorage.setItem('m1_logo_' + mode, src);
+
+    // Upload to server
+    try {
+      const r = await fetch('http://localhost:3001/api/branding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'logo-' + mode, dataUrl: src })
+      });
+      const d = await r.json();
+      if (d.ok) {
+        localStorage.setItem('m1_logo_' + mode, 'http://localhost:3001/' + d.url);
+      }
+    } catch (err) {
+      console.warn("Server upload failed, using local base64 fallback");
+      localStorage.setItem('m1_logo_' + mode, src);
+    }
+
+    const finalUrl = localStorage.getItem('m1_logo_' + mode);
     const img = document.getElementById('logo' + (mode === 'light' ? 'Light' : 'Dark') + 'Img');
     const placeholder = document.getElementById('logo' + (mode === 'light' ? 'Light' : 'Dark') + 'Placeholder');
-    img.src = src; img.style.display = 'block';
+    img.src = finalUrl; img.style.display = 'block';
     if (placeholder) placeholder.style.display = 'none';
-    // Apply to sidebar mark if needed
+
     applyBranding();
   };
   reader.readAsDataURL(file);
@@ -476,15 +493,32 @@ function uploadLogo(input, mode) {
 function uploadFavicon(input) {
   const file = input.files[0]; if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = async e => {
     const src = e.target.result;
-    localStorage.setItem('m1_favicon', src);
+
+    // Upload to server
+    try {
+      const r = await fetch('http://localhost:3001/api/branding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'favicon', dataUrl: src })
+      });
+      const d = await r.json();
+      if (d.ok) {
+        localStorage.setItem('m1_favicon', 'http://localhost:3001/' + d.url);
+      }
+    } catch (err) {
+      localStorage.setItem('m1_favicon', src);
+    }
+
+    const finalUrl = localStorage.getItem('m1_favicon');
     const link = document.querySelector("link[rel~='icon']") || document.createElement('link');
-    link.rel = 'icon'; link.href = src;
+    link.rel = 'icon'; link.href = finalUrl;
     document.head.appendChild(link);
     const prev = document.getElementById('faviconPreview');
-    prev.src = src; prev.style.display = 'block';
-    document.getElementById('faviconStatus').textContent = '✅ Favicon aplicado';
+    if (prev) { prev.src = finalUrl; prev.style.display = 'block'; }
+    const status = document.getElementById('faviconStatus');
+    if (status) status.textContent = '✅ Favicon sincronizado con la nube';
   };
   reader.readAsDataURL(file);
 }
@@ -492,9 +526,9 @@ function uploadFavicon(input) {
 function applyBranding() {
   const light = localStorage.getItem('m1_logo_light');
   const dark = localStorage.getItem('m1_logo_dark');
-  // You can apply logo to sidebar .mark element if needed
   const mark = document.querySelector('.mark');
-  if (mark && light) { mark.innerHTML = `<img src="${light}" style="height:28px;width:28px;object-fit:contain;border-radius:6px">`; }
+  let url = light || 'assets/m1-logo.png';
+  if (mark) { mark.innerHTML = `<img src="${url}" style="height:36px;width:36px;object-fit:contain;border-radius:8px">`; }
 }
 
 // Restore branding on load
@@ -504,6 +538,7 @@ function applyBranding() {
   const light = localStorage.getItem('m1_logo_light');
   const dark = localStorage.getItem('m1_logo_dark');
   if (light) { const i = document.getElementById('logoLightImg'); if (i) { i.src = light; i.style.display = 'block'; const p = document.getElementById('logoLightPlaceholder'); if (p) p.style.display = 'none'; } }
+
   if (dark) { const i = document.getElementById('logoDarkImg'); if (i) { i.src = dark; i.style.display = 'block'; const p = document.getElementById('logoDarkPlaceholder'); if (p) p.style.display = 'none'; } }
   applyBranding();
 })();
