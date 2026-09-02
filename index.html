@@ -9,6 +9,7 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800;900&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="assets/styles.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -59,25 +60,52 @@
           <h1 id="viewTitle">Dashboard Principal</h1>
           <p id="viewSub">Evaluación, brechas, riesgos y cálculo de puntos totales para la licitación.</p>
         </div>
-        <div class="actions">
+        <div class="actions"
+          style="display:flex; gap:8px; align-items:center; background: rgba(255,255,255,0.6); padding: 6px; border-radius: 100px; border: 1px solid var(--line-strong); backdrop-filter: blur(12px); box-shadow: 0 8px 32px rgba(0,0,0,0.04);">
+
           <button id="bidArchitectOpenBtn" class="action-btn"
-            style="color:#F8FAFC;background:#3B82F6;border:none;display:flex;align-items:center;justify-content:center;padding:10px 16px;font-weight:800;letter-spacing:0.5px"
-            title="BID ARCHITECT AI">🧠 BID ARCHITECT</button>
-          <button id="adminBtn" class="action-btn outline"
-            style="color:var(--text-dark);border-color:var(--line-strong);display:flex;align-items:center;justify-content:center;padding:10px"
-            title="Administración">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
+            style="background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); color: #fff; border: none; border-radius: 100px; padding: 10px 20px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);"
+            title="BID ARCHITECT AI">
+            <i class="ph-fill ph-brain" style="font-size: 16px; margin-right: 6px;"></i> BID ARCHITECT
           </button>
-          <label class="action-btn outline">Importar <input id="jsonInput" type="file" accept=".json" hidden></label>
-          <button class="action-btn outline" id="jsonBtn">Exportar JSON</button>
-          <button class="action-btn outline" id="loadBtn">Abrir</button>
-          <button class="action-btn outline" id="saveBtn">Guardar</button>
-          <button class="action-btn outline warn" id="resetBtn">Restaurar</button>
-          <button class="action-btn primary" id="pdfBtn">PDF Ejecutivo</button>
+
+          <div style="width: 1px; height: 24px; background: var(--line-strong); margin: 0 4px;"></div>
+
+          <label class="action-btn outline futuristic-btn" title="Importar JSON">
+            <i class="ph-bold ph-upload-simple"></i> IMPORTAR
+            <input id="jsonInput" type="file" accept=".json" hidden>
+          </label>
+
+          <button class="action-btn outline futuristic-btn" id="jsonBtn" title="Exportar JSON">
+            <i class="ph-bold ph-download-simple"></i> EXPORTAR JSON
+          </button>
+
+          <button class="action-btn outline futuristic-btn" id="loadBtn" title="Abrir escenario guardado">
+            <i class="ph-bold ph-folder-open"></i> ABRIR
+          </button>
+
+          <button class="action-btn outline futuristic-btn" id="saveBtn" title="Guardar estado actual">
+            <i class="ph-bold ph-floppy-disk"></i> GUARDAR
+          </button>
+
+          <button class="action-btn outline futuristic-btn" id="resetBtn" title="Restaurar parámetros originales"
+            style="color: #EF4444;">
+            <i class="ph-bold ph-arrow-counter-clockwise"></i> RESTAURAR
+          </button>
+
+          <div style="width: 1px; height: 24px; background: var(--line-strong); margin: 0 4px;"></div>
+
+          <button class="action-btn primary" id="pdfBtn"
+            style="border-radius: 100px; padding: 10px 20px; background: var(--dark-panel); border-color: var(--dark-panel);">
+            <i class="ph-bold ph-file-pdf" style="font-size: 16px; margin-right: 6px;"></i> PDF EJECUTIVO
+          </button>
+
+          <button id="adminBtn" class="action-btn outline"
+            style="border-radius: 100px; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border-color: transparent;"
+            title="Administración CLOUD">
+            <i class="ph-bold ph-gear-six" style="font-size: 20px; color: var(--text-dark);"></i>
+          </button>
+
         </div>
       </header>
 
