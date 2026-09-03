@@ -456,7 +456,9 @@ function applyTheme(name) {
   localStorage.setItem('m1_theme', name);
   // Visual feedback: mark active swatch
   document.querySelectorAll('.theme-swatch').forEach(b => b.style.outline = '');
-  event.currentTarget.style.outline = '3px solid #0F172A';
+  if (typeof event !== 'undefined' && event && event.currentTarget) {
+    event.currentTarget.style.outline = '3px solid #0F172A';
+  }
 }
 // Restore theme on load
 const _savedTheme = localStorage.getItem('m1_theme');
