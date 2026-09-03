@@ -184,14 +184,16 @@ textarea {
 /* MENU TOGGLE */
 .menu-toggle {
     position: absolute;
-    top: 32px;
-    right: -16px;
+    top: 50%;
+    right: -12px;
+    transform: translateY(-50%);
     background: var(--accent);
     color: #fff;
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 48px;
+    padding: 0;
     border: none;
-    border-radius: 50%;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -202,7 +204,8 @@ textarea {
 }
 
 .menu-toggle:hover {
-    transform: scale(1.1);
+    background: #1D4ED8;
+    transform: translateY(-50%) scale(1.1);
     box-shadow: 0 6px 16px rgba(59, 130, 246, 0.6);
 }
 
