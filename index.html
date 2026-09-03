@@ -94,17 +94,6 @@
           </button>
 
           <div style="display:flex; gap:4px; align-items:center">
-            <label class="action-btn" title="Importar JSON"
-              style="background:transparent; border:none; color:var(--text-dark); padding:10px 16px; font-size:11px; cursor:pointer;">
-              <i class="ph-bold ph-upload-simple"></i> IMPORTAR
-              <input id="jsonInput" type="file" accept=".json" hidden>
-            </label>
-
-            <button class="action-btn" id="jsonBtn" title="Exportar JSON"
-              style="background:transparent; border:none; color:var(--text-dark); padding:10px 16px; font-size:11px;">
-              <i class="ph-bold ph-download-simple"></i> EXPORTAR JSON
-            </button>
-
             <button class="action-btn" id="loadBtn" title="Abrir escenario guardado"
               style="background:transparent; border:none; color:var(--text-dark); padding:10px 16px; font-size:11px;">
               <i class="ph-bold ph-folder-open"></i> ABRIR
@@ -160,6 +149,9 @@
             <button onclick="showAdminTab('tab-themes')" id="atab-themes" class="admin-tab"
               style="padding:18px 24px 16px; border:none; background:transparent; font-weight:700; font-size:13px; cursor:pointer; color:#64748B; border-bottom:3px solid transparent; display:flex; align-items:center; gap:8px">
               <i class="ph-bold ph-paint-brush"></i> Temas</button>
+            <button onclick="showAdminTab('tab-data')" id="atab-data" class="admin-tab"
+              style="padding:18px 24px 16px; border:none; background:transparent; font-weight:700; font-size:13px; cursor:pointer; color:#64748B; border-bottom:3px solid transparent; display:flex; align-items:center; gap:8px">
+              <i class="ph-bold ph-database"></i> JSON</button>
           </div>
 
           <!-- Tab: API / IA -->
@@ -179,6 +171,36 @@
             <button onclick="saveApiKey()" class="primary"
               style="display:flex; justify-content:center; align-items:center; gap:8px; width:100%; padding:14px; background:#3B82F6; color:#fff; border:none; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);"><i
                 class="ph-bold ph-floppy-disk"></i> Guardar API Key</button>
+          </div>
+
+          <!-- Tab: JSON Data -->
+          <div id="tab-data" class="admin-tab-content" style="padding:32px 40px; display:none; background: #fff">
+            <h3 style="margin-top:0; margin-bottom:20px; font-size:14px; font-weight:800; color:#0F172A">Gestión de
+              Estado Base (JSON)</h3>
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <div style="background:#F8FAFC; border:1px solid #E2E8F0; padding:20px; border-radius:12px;">
+                <h4 style="margin:0 0 12px 0; color:#3B82F6; font-size:12px; font-weight:800"><i
+                    class="ph-bold ph-download-simple"></i> Copia de Seguridad</h4>
+                <p style="margin:0 0 16px 0; font-size:12px; color:#64748B; line-height:1.4">Exporta todo el portafolio
+                  y parámetros configurados a un archivo JSON seguro.</p>
+                <button id="jsonBtnClone" title="Exportar JSON" onclick="document.getElementById('jsonBtn').click()"
+                  style="background:#3B82F6; color:#fff; border:none; padding:10px 16px; border-radius:8px; font-weight:700; width:100%; cursor:pointer;">
+                  EXPORTAR JSON COMPLETO
+                </button>
+                <button id="jsonBtn" hidden></button> <!-- Original trigger handled by m1Calculations -->
+              </div>
+              <div style="background:#FEF2F2; border:1px solid #FECACA; padding:20px; border-radius:12px;">
+                <h4 style="margin:0 0 12px 0; color:#EF4444; font-size:12px; font-weight:800"><i
+                    class="ph-bold ph-upload-simple"></i> Sobrescribir Estado</h4>
+                <p style="margin:0 0 16px 0; font-size:12px; color:#991B1B; line-height:1.4">Cargar un archivo JSON
+                  destruirá los datos actuales de la memoria. Úsalo con precaución.</p>
+                <label title="Importar JSON"
+                  style="background:#EF4444; color:#fff; border:none; padding:10px 16px; border-radius:8px; font-weight:700; display:block; text-align:center; cursor:pointer;">
+                  IMPORTAR ARCHIVO JSON
+                  <input id="jsonInput" type="file" accept=".json" hidden>
+                </label>
+              </div>
+            </div>
           </div>
 
           <!-- Tab: Branding -->
