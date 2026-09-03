@@ -148,9 +148,9 @@ function openZafiroForm(id) {
     modal.style.display = 'flex';
 }
 
-function saveZafiroLicitacion() {
+async function saveZafiroLicitacion() {
     const name = (document.getElementById('z-name').value || '').trim();
-    if (!name) { alert('El nombre de la licitación es obligatorio.'); return; }
+    if (!name) { await window.m1Alert('El nombre base de la licitación es obligatorio para poder crear un registro.', 'Dato Faltante'); return; }
     const modal = document.getElementById('zafiroModal');
     const list = zGetLicitaciones();
     const editId = modal.dataset.editId;

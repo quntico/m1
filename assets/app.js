@@ -1,3 +1,41 @@
+window.m1Alert = function (desc, title = 'Atención') {
+  return new Promise(resolve => {
+    document.getElementById('m1CoreTitle').textContent = title;
+    document.getElementById('m1CoreDesc').innerHTML = desc;
+    document.getElementById('m1CoreInput').style.display = 'none';
+    document.getElementById('m1CoreCancel').style.display = 'none';
+    document.getElementById('m1CoreModalbg').style.display = 'flex';
+    document.getElementById('m1CoreConfirm').onclick = () => { document.getElementById('m1CoreModalbg').style.display = 'none'; resolve(); };
+  });
+};
+
+window.m1Confirm = function (desc, title = 'Atención') {
+  return new Promise(resolve => {
+    document.getElementById('m1CoreTitle').textContent = title;
+    document.getElementById('m1CoreDesc').innerHTML = desc;
+    document.getElementById('m1CoreInput').style.display = 'none';
+    document.getElementById('m1CoreCancel').style.display = 'block';
+    document.getElementById('m1CoreModalbg').style.display = 'flex';
+    document.getElementById('m1CoreConfirm').onclick = () => { document.getElementById('m1CoreModalbg').style.display = 'none'; resolve(true); };
+    document.getElementById('m1CoreCancel').onclick = () => { document.getElementById('m1CoreModalbg').style.display = 'none'; resolve(false); };
+  });
+};
+
+window.m1Prompt = function (desc, defaultText = '', title = 'Atención') {
+  return new Promise(resolve => {
+    document.getElementById('m1CoreTitle').textContent = title;
+    document.getElementById('m1CoreDesc').innerHTML = desc;
+    const input = document.getElementById('m1CoreInput');
+    input.style.display = 'block';
+    input.value = defaultText;
+    document.getElementById('m1CoreCancel').style.display = 'block';
+    document.getElementById('m1CoreModalbg').style.display = 'flex';
+    setTimeout(() => input.focus(), 100);
+    document.getElementById('m1CoreConfirm').onclick = () => { document.getElementById('m1CoreModalbg').style.display = 'none'; resolve(input.value); };
+    document.getElementById('m1CoreCancel').onclick = () => { document.getElementById('m1CoreModalbg').style.display = 'none'; resolve(null); };
+  });
+};
+
 const M1Calc = window.M1Calculations;
 const M1Audit = window.M1AuditTrail;
 const MIN = M1Calc.M1_LIMITS.TECHNICAL_SOLVENCY_MIN;
@@ -258,17 +296,17 @@ $("#addContractBtn").onclick = () => { state.contracts.push({ name: "", date: ""
 $("#allDocsBtn").onclick = () => { const k = window.cockpitTarget || "x"; criteria.forEach(c => { state.docs[c.id].done = true; state.audit[c.id][k] = M1Audit.updateAuditRecord(state.audit[c.id][k], { status: M1Audit.AUDIT_STATUSES.VALIDATED, evidence: state.audit[c.id][k].evidence || c.at, origin: state.audit[c.id][k].origin || c.at, responsible: state.audit[c.id][k].responsible || "Pendiente de asignar" }) }); persist(); renderAll() };
 
 function saved() { try { return JSON.parse(localStorage.getItem("m1_prequal_saved") || "[]") } catch (e) { return [] } }
-$("#saveBtn").onclick = () => { const n = prompt("Nombre del escenario:", "Escenario " + new Date().toLocaleString("es-MX")); if (!n) return; const l = saved(); l.unshift({ id: Date.now(), name: n, date: new Date().toISOString(), state: JSON.parse(JSON.stringify(state)) }); localStorage.setItem("m1_prequal_saved", JSON.stringify(l.slice(0, 30))); alert("Guardado.") };
+$("#saveBtn").onclick = async () => { const n = await window.m1Prompt("Nombra tu copia de seguridad para control dentro del panel de carga de escenarios.", "Escenario " + new Date().toLocaleString("es-MX"), "Guardar Escenario"); if (!n) return; const l = saved(); l.unshift({ id: Date.now(), name: n, date: new Date().toISOString(), state: JSON.parse(JSON.stringify(state)) }); localStorage.setItem("m1_prequal_saved", JSON.stringify(l.slice(0, 30))); window.m1Alert("La instantánea operativa fue registrada correctamente.", "Operación Exitosa"); };
 $("#loadBtn").onclick = () => { const l = saved(); $("#savedList").innerHTML = l.length ? l.map(s => `<div class="saved"><div><b>${esc(s.name)}</b><div class="desc">${new Date(s.date).toLocaleString("es-MX")}</div></div><button data-load="${s.id}">Cargar</button></div>`).join("") : "<p>Sin escenarios guardados.</p>"; $("#modal").classList.add("open"); $$("[data-load]").forEach(b => b.onclick = () => { state = JSON.parse(JSON.stringify(l.find(s => s.id == b.dataset.load).state)); persist(); renderAll(); $("#modal").classList.remove("open") }) };
 $("#closeModal").onclick = () => $("#modal").classList.remove("open"); $("#modal").onclick = e => { if (e.target === $("#modal")) $("#modal").classList.remove("open") };
 function download(name, text, type) { const blob = new Blob([text], { type }); const u = URL.createObjectURL(blob), a = document.createElement("a"); a.href = u; a.download = name; a.click(); URL.revokeObjectURL(u) }
 $("#jsonBtn").onclick = () => download("M1_precalificacion.json", JSON.stringify(state, null, 2), "application/json");
-$("#jsonInput").onchange = async e => { try { state = merge(defaultState(), JSON.parse(await e.target.files[0].text())); persist(); renderAll(); alert("Importado.") } catch (err) { alert("JSON inválido.") } };
+$("#jsonInput").onchange = async e => { try { state = merge(defaultState(), JSON.parse(await e.target.files[0].text())); persist(); renderAll(); await window.m1Alert("Configuración operativa restaurada con éxito desde el archivo externo.", "Restauración Completada"); } catch (err) { await window.m1Alert("El archivo seleccionado está corrupto o no pertenece a la estructura M1.", "Formato Inválido"); } };
 $("#csvBtn").onclick = () => { const k = window.cockpitTarget || "x"; let s = "Participante,AT,Criterio,Score automatico,Score final,Evidencia,Origen,Responsable,Fecha,Estado,Riesgo,Notas,Override,Score manual,Motivo override\n"; criteria.forEach(c => { const a = state.audit[c.id][k]; s += [state.companies[k]?.name || k, c.at, c.t, a.automaticScore, a.finalScore, a.evidence, a.origin, a.responsible, a.date, a.status, a.risk, a.notes, a.override ? "SI" : "NO", a.manualScore ?? "", a.overrideReason].map(v => `"${String(v || "").replace(/"/g, '""')}"`).join(",") + "\n" }); download("M1_expediente.csv", s, "text/csv") };
-$("#resetBtn").onclick = () => { if (confirm("¿Restaurar toda la base?")) { localStorage.removeItem("m1_prequal_autosave"); location.reload() } };
+$("#resetBtn").onclick = async () => { if (await window.m1Confirm("Se eliminarán de memoria caché todos tus escenarios temporales regresando al estado inicial. No podrás recuperar este estado particular tras el reinicio.", "¿Destruir datos locales?")) { localStorage.removeItem("m1_prequal_autosave"); location.reload() } };
 
-$("#pdfBtn").onclick = () => {
-  const r = report(); if (!window.jspdf?.jsPDF) { alert("Se requiere internet para cargar jsPDF."); return } const { jsPDF } = window.jspdf, p = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" }); p.setFillColor(37, 43, 50); p.rect(0, 0, 297, 22, "F"); p.setFillColor(9, 101, 214); p.rect(0, 19, 297, 3, "F"); p.setTextColor(255, 255, 255); p.setFont("helvetica", "bold"); p.setFontSize(15); p.text("M1 · MOTOR DE PRECALIFICACIÓN · REPORTE EJECUTIVO", 12, 13); p.setTextColor(45, 45, 45); p.setFontSize(8); p.text("Técnica 50 pts · mínimo 37.50 · Económica 50 pts · precios sin IVA", 12, 29);
+$("#pdfBtn").onclick = async () => {
+  const r = report(); if (!window.jspdf?.jsPDF) { await window.m1Alert("Se requieren dependencias en la nube (CDN) para generar el PDF. Verifica tu conexión.", "Falla de red"); return } const { jsPDF } = window.jspdf, p = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" }); p.setFillColor(37, 43, 50); p.rect(0, 0, 297, 22, "F"); p.setFillColor(9, 101, 214); p.rect(0, 19, 297, 3, "F"); p.setTextColor(255, 255, 255); p.setFont("helvetica", "bold"); p.setFontSize(15); p.text("M1 · MOTOR DE PRECALIFICACIÓN · REPORTE EJECUTIVO", 12, 13); p.setTextColor(45, 45, 45); p.setFontSize(8); p.text("Técnica 50 pts · mínimo 37.50 · Económica 50 pts · precios sin IVA", 12, 29);
   p.autoTable({ startY: 34, head: [["Empresa", "Calidad", "Capacidad", "Experiencia", "Contratos", "Técnica", "Estado", "Económica", "Total", "Oferta"]], body: r.arr.map(a => [a.name, fmt(gscore(a.key, "quality")), fmt(gscore(a.key, "capacity")), fmt(gscore(a.key, "experience")), fmt(gscore(a.key, "contracts")), fmt(a.technical), a.solvent ? "SOLVENTE" : "NO SOLVENTE", fmt(a.economic), fmt(a.total), money(a.price)]), theme: "grid", headStyles: { fillColor: [37, 43, 50] }, styles: { fontSize: 7 } });
   let y = p.lastAutoTable.finalY + 7; p.setFontSize(10); p.setFont("helvetica", "bold"); p.text("Detalle técnico", 12, y); p.autoTable({ startY: y + 3, head: [["Criterio", "Máx.", "GH", "PROGONZA", "X", "AT"]], body: criteria.map(c => [c.t, fmt(c.max), fmt(state.scores[c.id].gh), fmt(state.scores[c.id].pro), fmt(state.scores[c.id].x), c.at]), theme: "grid", headStyles: { fillColor: [9, 101, 214] }, styles: { fontSize: 6.1, cellPadding: 1.5 }, columnStyles: { 0: { cellWidth: 110 } } });
   p.addPage(); p.setFontSize(12); p.text("Diagnóstico de Consorcio X", 12, 15); const br = criteria.filter(c => M1Calc.calculateScoreGap({ currentScore: state.scores[c.id].x, maxScore: c.max }).result > .001).map(c => { const a = state.audit[c.id].x; return [c.t, fmt(M1Calc.calculateScoreGap({ currentScore: state.scores[c.id].x, maxScore: c.max }).result), c.at, a.status, a.evidence || "Pendiente"] }); p.autoTable({ startY: 20, head: [["Brecha", "Pts faltantes", "AT", "Estado", "Evidencia"]], body: br, theme: "grid", headStyles: { fillColor: [192, 61, 51] }, styles: { fontSize: 7 } });
@@ -326,7 +364,7 @@ $$(".theme-color").forEach(btn => {
 // (theme restored below by the full applyTheme system)
 
 $("#exportZipBtn").onclick = async () => {
-  if (!window.JSZip) return alert("Se requiere internet o recargar la página para cargar JSZip.");
+  if (!window.JSZip) return await window.m1Alert("Se requieren dependencias en la nube (CDN) para generar el archivo comprimido ZIP.", "Requisito Fallido");
   const zip = new JSZip();
   try {
     const fetchB = async p => (await fetch(p)).blob();
@@ -344,7 +382,7 @@ $("#exportZipBtn").onclick = async () => {
       $("#sysLastExport").textContent = time;
     });
   } catch (err) {
-    alert("Error compilando el ZIP: " + err.message + ". Comprueba que corra en un servidor web local y no como archivo estático file://.");
+    await window.m1Alert("Error compilando el ZIP: " + err.message + ". <br><br>Verifica estar operando sobre localhost Node y no file://.", "Error de Sistema");
   }
 };
 
@@ -511,7 +549,7 @@ function uploadLogo(input, mode) {
       try {
         localStorage.setItem('m1_logo_' + mode, src);
       } catch (e) {
-        alert('Caché saturada y el servidor Node no responde. \\n\\nPOR FAVOR CERRAR ESTA VENTANA Y REINICIAR EL SERVIDOR EJECUTANDO: \\nnode server.js');
+        window.m1Alert('Caché saturada y el servidor Node no responde. <br><br>POR FAVOR CERRAR ESTA VENTANA Y REINICIAR EL SERVIDOR.', 'Fallo de Persistencia');
       }
     }
 
