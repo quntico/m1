@@ -565,6 +565,12 @@ function applyBranding() {
   if (mark) {
     const separator = url.includes('?') ? '&' : '?';
     mark.innerHTML = `<img src="${url}${separator}t=${Date.now()}" style="height:36px;width:36px;object-fit:contain;border-radius:8px">`;
+    if (light) {
+      mark.style.background = 'transparent';
+      mark.style.boxShadow = 'none';
+      mark.style.width = 'auto'; // allow rectangular logos
+      mark.style.padding = '0';
+    }
   }
 }
 
