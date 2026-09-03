@@ -100,7 +100,7 @@ function renderZafiro() {
       </td>
       <td style="padding:16px; text-align:center">
         ${parseInt(l.risks || 0) > 0
-            ? `<span style="background:#FEE2E2; color:#DC2626; padding:4px 10px; border-radius:100px; font-size:11px; font-weight:800">⚠️ ${l.risks}</span>`
+            ? `<span style="background:#FEE2E2; color:#DC2626; padding:4px 10px; border-radius:100px; font-size:11px; font-weight:800; display:inline-flex; align-items:center; gap:4px"><i class="ph-bold ph-warning"></i> ${l.risks}</span>`
             : `<span style="color:var(--text-muted); font-size:12px">—</span>`}
       </td>
     </tr>

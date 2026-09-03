@@ -1,17 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap');
 
 :root {
-    /* M1 Precal Theme Colors */
-    --accent: #10B981;
-    /* Emerald Green */
-    --accent-hover: #059669;
-    --accent-bg: rgba(16, 185, 129, 0.1);
+    /* M1 Precal Theme Colors (Updated Modern) */
+    --accent: #065FDD;
+    --accent-hover: #044BAE;
+    --accent-bg: rgba(6, 95, 221, 0.1);
 
-    --bg-main: #F8FAFC;
+    --bg-main: #F4F7FC;
+    /* Clean off-white bg */
     --bg-panel: #FFFFFF;
 
-    --text-dark: #0F172A;
-    /* Slate 900 */
+    /* New Sidebar specifics to match Dark Aesthetic */
+    --bg-side: #1A1A1A;
+    --bg-side-hover: #292929;
+    --text-side: #E5E5E5;
+    --text-side-muted: #888888;
+    --side-border: #333333;
+
+    --text-dark: #1E293B;
     --text-muted: #64748B;
     --text-light: #94A3B8;
 

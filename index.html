@@ -34,28 +34,42 @@
           <div><b>Precalificación</b><span>Engine 4.0</span></div>
         </div>
         <nav>
-          <button class="nav active" data-view="cockpit">0. Dashboard Principal</button>
+          <button class="nav active" data-view="cockpit"
+            style="display:flex; align-items:center; gap:10px; padding:10px 16px"><i class="ph-light ph-squares-four"
+              style="font-size:18px"></i> Dashboard Principal</button>
 
           <div class="nav-group-title">Simulador de Precalificación</div>
-          <button class="nav" data-view="technical">1. Motor técnico</button>
-          <button class="nav" data-view="hr">2. Recursos humanos</button>
-          <button class="nav" data-view="experience">3. Experiencia / OEM</button>
-          <button class="nav" data-view="economic">4. Capacidad financiera</button>
-          <button class="nav" data-view="price">5. Precio / ranking</button>
+          <button class="nav" data-view="technical"
+            style="display:flex; align-items:center; gap:10px; padding:8px 16px"><i class="ph-light ph-cpu"
+              style="font-size:18px"></i> Motor técnico</button>
+          <button class="nav" data-view="hr" style="display:flex; align-items:center; gap:10px; padding:8px 16px"><i
+              class="ph-light ph-users" style="font-size:18px"></i> Recursos humanos</button>
+          <button class="nav" data-view="experience"
+            style="display:flex; align-items:center; gap:10px; padding:8px 16px"><i class="ph-light ph-buildings"
+              style="font-size:18px"></i> Experiencia / OEM</button>
+          <button class="nav" data-view="economic"
+            style="display:flex; align-items:center; gap:10px; padding:8px 16px"><i class="ph-light ph-chart-line-up"
+              style="font-size:18px"></i> Capacidad financiera</button>
+          <button class="nav" data-view="price" style="display:flex; align-items:center; gap:10px; padding:8px 16px"><i
+              class="ph-light ph-currency-dollar" style="font-size:18px"></i> Precio / ranking</button>
 
           <div class="nav-group-title">Auditoría Ejecutiva</div>
-          <button class="nav" data-view="audit">6. Control Center</button>
+          <button class="nav" data-view="audit" style="display:flex; align-items:center; gap:10px; padding:8px 16px"><i
+              class="ph-light ph-shield-check" style="font-size:18px"></i> Control Center</button>
 
           <div class="nav-group-title">Herramientas Adicionales</div>
-          <button class="nav" data-view="documents">7. Expediente / evidencias</button>
-          <button class="nav" data-view="scenarios">8. Escenarios</button>
-          <button class="nav" data-view="rules">9. Mecánica de evaluación</button>
+          <button class="nav" data-view="documents"
+            style="display:flex; align-items:center; gap:10px; padding:8px 16px"><i class="ph-light ph-folder-open"
+              style="font-size:18px"></i> Expediente / evidencias</button>
+          <button class="nav" data-view="scenarios"
+            style="display:flex; align-items:center; gap:10px; padding:8px 16px"><i class="ph-light ph-intersect-three"
+              style="font-size:18px"></i> Escenarios</button>
+          <button class="nav" data-view="rules" style="display:flex; align-items:center; gap:10px; padding:8px 16px"><i
+              class="ph-light ph-book-open-text" style="font-size:18px"></i> Mecánica de evaluación</button>
 
           <div class="nav-group-title">Gestión Empresarial</div>
-          <button class="nav" data-view="zafiro" style="display:flex; align-items:center; gap:8px">
-            <span
-              style="background:linear-gradient(135deg,#3B82F6,#8B5CF6); color:#fff; font-size:9px; font-weight:900; padding:2px 6px; border-radius:4px; letter-spacing:0.5px">Z</span>
-            Portafolio ZAFIRO
+          <button class="nav" data-view="zafiro" style="display:flex; align-items:center; gap:10px; padding:8px 16px">
+            <i class="ph-light ph-folder-star" style="font-size:18px"></i> Portafolio ZAFIRO
           </button>
         </nav>
 
@@ -138,14 +152,14 @@
           <!-- Tabs -->
           <div style="display:flex; border-bottom:1px solid var(--line); padding:0 32px; background: #fff">
             <button onclick="showAdminTab('tab-ai')" id="atab-ai" class="admin-tab active"
-              style="padding:18px 24px 16px; border:none; background:transparent; font-weight:800; font-size:13px; cursor:pointer; color:#3B82F6; border-bottom:3px solid #3B82F6; display:flex; align-items:center; gap:8px">🤖
-              API / IA</button>
+              style="padding:18px 24px 16px; border:none; background:transparent; font-weight:800; font-size:13px; cursor:pointer; color:#3B82F6; border-bottom:3px solid #3B82F6; display:flex; align-items:center; gap:8px">
+              <i class="ph-bold ph-robot"></i> API / IA</button>
             <button onclick="showAdminTab('tab-branding')" id="atab-branding" class="admin-tab"
-              style="padding:18px 24px 16px; border:none; background:transparent; font-weight:700; font-size:13px; cursor:pointer; color:#64748B; border-bottom:3px solid transparent; display:flex; align-items:center; gap:8px">🎨
-              Branding</button>
+              style="padding:18px 24px 16px; border:none; background:transparent; font-weight:700; font-size:13px; cursor:pointer; color:#64748B; border-bottom:3px solid transparent; display:flex; align-items:center; gap:8px">
+              <i class="ph-bold ph-palette"></i> Branding</button>
             <button onclick="showAdminTab('tab-themes')" id="atab-themes" class="admin-tab"
-              style="padding:18px 24px 16px; border:none; background:transparent; font-weight:700; font-size:13px; cursor:pointer; color:#64748B; border-bottom:3px solid transparent; display:flex; align-items:center; gap:8px">🖌️
-              Temas</button>
+              style="padding:18px 24px 16px; border:none; background:transparent; font-weight:700; font-size:13px; cursor:pointer; color:#64748B; border-bottom:3px solid transparent; display:flex; align-items:center; gap:8px">
+              <i class="ph-bold ph-paint-brush"></i> Temas</button>
           </div>
 
           <!-- Tab: API / IA -->
@@ -163,8 +177,8 @@
             </div>
             <div id="apiSaveStatus" style="font-size:13px; font-weight:700; margin-bottom:16px; display:none"></div>
             <button onclick="saveApiKey()" class="primary"
-              style="width:100%; padding:14px; background:#3B82F6; color:#fff; border:none; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);">💾
-              Guardar API Key</button>
+              style="display:flex; justify-content:center; align-items:center; gap:8px; width:100%; padding:14px; background:#3B82F6; color:#fff; border:none; border-radius:12px; font-weight:800; font-size:13px; cursor:pointer; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);"><i
+                class="ph-bold ph-floppy-disk"></i> Guardar API Key</button>
           </div>
 
           <!-- Tab: Branding -->
@@ -183,7 +197,7 @@
                 <label
                   style="background:#3B82F6; color:#fff; padding:14px 20px; border-radius:100px; font-size:12px; cursor:pointer; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; width:100%; box-sizing:border-box; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25); transition:transform 0.1s"
                   onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform='scale(1)'">
-                  📷 SUBIR LOGO CLARO
+                  <i class="ph-bold ph-upload-simple"></i> SUBIR LOGO CLARO
                   <input type="file" accept="image/*" id="logoLightInput" style="display:none"
                     onchange="uploadLogo(this,'light')">
                 </label>
@@ -201,7 +215,7 @@
                 <label
                   style="background:#0F172A; color:#fff; padding:14px 20px; border-radius:100px; font-size:12px; cursor:pointer; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; width:100%; box-sizing:border-box; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25); transition:transform 0.1s"
                   onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform='scale(1)'">
-                  🌙 SUBIR LOGO OSCURO
+                  <i class="ph-bold ph-moon"></i> SUBIR LOGO OSCURO
                   <input type="file" accept="image/*" id="logoDarkInput" style="display:none"
                     onchange="uploadLogo(this,'dark')">
                 </label>
@@ -217,7 +231,7 @@
                 <label
                   style="background:#F8FAFC; border:2px solid #E2E8F0; color:#0F172A; padding:12px 24px; border-radius:100px; font-size:12px; cursor:pointer; font-weight:800; display:flex; align-items:center; gap:8px; transition:border 0.2s"
                   onmouseover="this.style.borderColor='#CBD5E1'" onmouseout="this.style.borderColor='#E2E8F0'">
-                  📌 SUBIR FAVICON
+                  <i class="ph-bold ph-app-window"></i> SUBIR FAVICON
                   <input type="file" accept=".ico,.png,.svg" id="faviconInput" style="display:none"
                     onchange="uploadFavicon(this)">
                 </label>
@@ -665,32 +679,32 @@
     <div
       style="display:grid; grid-template-columns:repeat(6,1fr); gap:1px; background:var(--line); border-bottom:1px solid var(--line)">
       <div style="background:#fff; padding:24px 20px">
-        <div style="font-size:22px; margin-bottom:4px; color:#60A5FA">↗</div>
+        <div style="font-size:24px; margin-bottom:4px; color:#60A5FA"><i class="ph-bold ph-trend-up"></i></div>
         <div style="font-size:26px; font-weight:900; color:var(--text-dark)" id="z-kpi-active">0</div>
         <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Licitaciones activas</div>
       </div>
       <div style="background:#fff; padding:24px 20px">
-        <div style="font-size:22px; margin-bottom:4px; color:#34D399">$</div>
+        <div style="font-size:24px; margin-bottom:4px; color:#34D399"><i class="ph-bold ph-currency-dollar"></i></div>
         <div style="font-size:26px; font-weight:900; color:var(--text-dark)" id="z-kpi-value">$0 MDP</div>
         <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Valor potencial</div>
       </div>
       <div style="background:#fff; padding:24px 20px">
-        <div style="font-size:22px; margin-bottom:4px; color:#A78BFA">◎</div>
+        <div style="font-size:24px; margin-bottom:4px; color:#A78BFA"><i class="ph-bold ph-target"></i></div>
         <div style="font-size:26px; font-weight:900; color:var(--text-dark)" id="z-kpi-prob">0%</div>
         <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Probabilidad promedio</div>
       </div>
       <div style="background:#fff; padding:24px 20px">
-        <div style="font-size:22px; margin-bottom:4px; color:#FCD34D">⌛</div>
+        <div style="font-size:24px; margin-bottom:4px; color:#FCD34D"><i class="ph-bold ph-calendar-blank"></i></div>
         <div style="font-size:26px; font-weight:900; color:var(--text-dark)" id="z-kpi-week">0</div>
         <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Cierran esta semana</div>
       </div>
       <div style="background:#fff; padding:24px 20px">
-        <div style="font-size:22px; margin-bottom:4px; color:#F87171">📄</div>
+        <div style="font-size:24px; margin-bottom:4px; color:#F87171"><i class="ph-bold ph-file-text"></i></div>
         <div style="font-size:26px; font-weight:900; color:var(--text-dark)" id="z-kpi-docs">0</div>
         <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Documentos pendientes</div>
       </div>
       <div style="background:#fff; padding:24px 20px">
-        <div style="font-size:22px; margin-bottom:4px; color:#EF4444">⚠️</div>
+        <div style="font-size:24px; margin-bottom:4px; color:#EF4444"><i class="ph-bold ph-warning"></i></div>
         <div style="font-size:26px; font-weight:900; color:var(--text-dark)" id="z-kpi-risks">0</div>
         <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Riesgos críticos</div>
       </div>
@@ -764,7 +778,7 @@
 
         <!-- Empty state -->
         <div id="z-empty" style="display:none; padding:60px; text-align:center; color:var(--text-muted)">
-          <div style="font-size:48px; margin-bottom:16px">📋</div>
+          <div style="font-size:48px; margin-bottom:16px; color:#CBD5E1"><i class="ph-light ph-folder-open"></i></div>
           <div style="font-weight:800; font-size:16px; margin-bottom:8px; color:var(--text-dark)">Sin licitaciones</div>
           <div style="font-size:13px">Haz clic en <b>+ Nueva licitación</b> para comenzar tu portafolio.</div>
         </div>
@@ -838,7 +852,8 @@
         </div>
         <div style="display:flex; gap:12px; margin-top:24px; justify-content:flex-end">
           <button onclick="document.getElementById('zafiroModal').style.display='none'" class="warn">Cancelar</button>
-          <button onclick="saveZafiroLicitacion()" class="primary">💾 Guardar Licitación</button>
+          <button onclick="saveZafiroLicitacion()" class="primary" style="display:flex; align-items:center; gap:8px"><i
+              class="ph-bold ph-floppy-disk"></i> Guardar Licitación</button>
         </div>
       </div>
     </div>
