@@ -113,7 +113,7 @@ textarea {
 }
 
 .shell.collapsed {
-    grid-template-columns: 0px minmax(0, 1fr);
+    grid-template-columns: 84px minmax(0, 1fr);
 }
 
 /* SIDEBAR */
@@ -154,37 +154,56 @@ textarea {
 }
 
 .shell.collapsed .side-content {
-    opacity: 0;
-    pointer-events: none;
-    width: 0px;
-    height: 0px;
-    overflow: hidden;
-    padding: 0;
+    padding: 24px 12px;
+}
+
+.shell.collapsed .logo div:last-child {
+    display: none;
+}
+
+.shell.collapsed .logo {
+    justify-content: center;
+}
+
+.shell.collapsed .nav-group-title,
+.shell.collapsed .foot {
+    display: none;
+}
+
+.shell.collapsed nav button {
+    font-size: 0;
+    justify-content: center;
+    padding: 14px;
+}
+
+.shell.collapsed nav button i {
+    font-size: 20px;
+    margin: 0;
 }
 
 /* MENU TOGGLE */
 .menu-toggle {
     position: absolute;
-    top: 24px;
-    right: -32px;
-    background: rgba(34, 36, 44, 0.85);
-    backdrop-filter: blur(10px);
-    color: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 8px;
-    border-radius: 0 8px 8px 0;
-    border-left: 0;
+    top: 32px;
+    right: -16px;
+    background: var(--accent);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 50;
-    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    transition: all 0.2s ease;
 }
 
 .menu-toggle:hover {
-    color: #3B82F6;
-    background: rgba(34, 36, 44, 0.95);
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.6);
 }
 
 /* LOGO */
