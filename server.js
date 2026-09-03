@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const { pool } = require('./src/db/neon'); // Starts the serverless Postgres connection pool
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
