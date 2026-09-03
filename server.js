@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const { pool } = require('./src/db/neon'); // Starts the serverless Postgres connection pool
+const { pool, query } = require('./src/db/neon'); // Starts the serverless Postgres connection pool
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
@@ -122,35 +122,25 @@ app.post('/api/branding', (req, res) => {
 app.post('/api/chat', async (req, res) => {
     try {
         const { message, contextId, contextType, clientApiKey } = req.body;
+        const msgId = Date.now().toString();
+        const timestamp = new Date().toISOString();
 
-        // Log user message
-        const currentHist = JSON.parse(fs.readFileSync(historyFile, 'utf-8'));
-        const userMsg = {
-            id: Date.now().toString(),
-            timestamp: new Date().toISOString(),
-            role: 'user',
-            content: message,
-            projectId: 'M1',
-            contextType: contextType || null,
-            contextId: contextId || null
-        };
-        currentHist.push(userMsg);
+        // 1. Insert User Message
+        await query(
+            'INSERT INTO agent_memory (id, timestamp, role, content, project_id, context_type, context_id) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+            [msgId, timestamp, 'user', message, 'M1', contextType || null, contextId || null]
+        );
 
+        // 2. Generate AI Response
         const response = await BidArchitectService.handleChat(message, { contextId, contextType, clientApiKey });
 
-        const aiMsg = {
-            id: (Date.now() + 1).toString(),
-            timestamp: new Date().toISOString(),
-            role: 'assistant',
-            content: response,
-            projectId: 'M1',
-            contextType: contextType || null,
-            contextId: contextId || null
-        };
-        currentHist.push(aiMsg);
-
-        // Persist
-        fs.writeFileSync(historyFile, JSON.stringify(currentHist, null, 2), 'utf-8');
+        // 3. Insert AI Response
+        const aiMsgId = (Date.now() + 1).toString();
+        const aiTimestamp = new Date().toISOString();
+        await query(
+            'INSERT INTO agent_memory (id, timestamp, role, content, project_id, context_type, context_id) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+            [aiMsgId, aiTimestamp, 'assistant', response, 'M1', contextType || null, contextId || null]
+        );
 
         res.json({ reply: response });
     } catch (err) {
@@ -159,11 +149,15 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-app.get('/api/chat/history', (req, res) => {
+app.get('/api/chat/history', async (req, res) => {
     try {
-        const currentHist = JSON.parse(fs.readFileSync(historyFile, 'utf-8'));
-        res.json(currentHist);
+        const result = await query(
+            'SELECT id, timestamp, role, content, project_id AS "projectId", context_type AS "contextType", context_id AS "contextId" FROM agent_memory WHERE project_id = $1 ORDER BY timestamp ASC',
+            ['M1']
+        );
+        res.json(result.rows);
     } catch (err) {
+        console.error("History error", err);
         res.status(500).json({ error: "Failed to read history." });
     }
 });
