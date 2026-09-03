@@ -499,7 +499,7 @@ function uploadLogo(input, mode) {
 
       if (d.ok) {
         localStorage.removeItem('m1_logo_' + mode); // Liberar memoria
-        localStorage.setItem('m1_logo_' + mode, `http://${host}:3001/` + d.url);
+        localStorage.setItem('m1_logo_' + mode, d.url + '?t=' + Date.now());
       }
     } catch (err) {
       console.warn("API Error, fallback to base64", err);
@@ -537,7 +537,7 @@ function uploadFavicon(input) {
       const d = await r.json();
       if (d.ok) {
         localStorage.removeItem('m1_favicon');
-        localStorage.setItem('m1_favicon', `http://${host}:3001/` + d.url);
+        localStorage.setItem('m1_favicon', d.url + '?t=' + Date.now());
       }
     } catch (err) {
       console.warn("Favicon API Error, fallback to base64", err);
@@ -559,10 +559,13 @@ function uploadFavicon(input) {
 
 function applyBranding() {
   const light = localStorage.getItem('m1_logo_light');
-  const dark = localStorage.getItem('m1_logo_dark');
   const mark = document.querySelector('.mark');
   let url = light || 'assets/m1-logo.png';
-  if (mark) { mark.innerHTML = `<img src="${url}?t=${Date.now()}" style="height:36px;width:36px;object-fit:contain;border-radius:8px">`; }
+
+  if (mark) {
+    const separator = url.includes('?') ? '&' : '?';
+    mark.innerHTML = `<img src="${url}${separator}t=${Date.now()}" style="height:36px;width:36px;object-fit:contain;border-radius:8px">`;
+  }
 }
 
 // Restore branding on load
